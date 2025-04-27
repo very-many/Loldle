@@ -1,7 +1,6 @@
 <div class="dropdown">
     <button id="langDropdown" class="dropbtn">Language</button>
-    <div id="myDropdown" class="dropdown-content">
-    </div>
+    <div id="myDropdown" class="dropdown-content"></div>
 </div>
 <style>
     /* Dropdown Button */
@@ -62,7 +61,6 @@ toggle between hiding and showing the dropdown content */
         document.getElementById("myDropdown").classList.toggle("show");
     };
 
-
     // Close the dropdown menu if the user clicks outside of it
     window.onclick = function (event) {
         if (!event.target.matches(".dropbtn")) {
@@ -81,7 +79,7 @@ toggle between hiding and showing the dropdown content */
     let lang = {};
 
     async function getLanguages() {
-        //if (lang) return lang;
+        if (Object.keys(lang).length !== 0) return lang;
 
         let response = await fetch(
             `https://ddragon.leagueoflegends.com/cdn/languages.json`
@@ -90,13 +88,13 @@ toggle between hiding and showing the dropdown content */
         lang = await response.json();
         return lang;
     }
-    console.log(await getLanguages());
-    localStorage.setItem("lang", JSON.stringify(await getLanguages()));
+    getLanguages().then((lang) => {
+        const dropdown = document.querySelector(".dropdown-content");
+        dropdown.innerHTML = lang
+            .map((language) => {
+                return `<a onclick="localStorage.setItem('lang', '${language}')">${language}</a>`;
+            })
+            .join("");
+    });
 
-    const dropdown = document.querySelector(".dropdown-content");
-    dropdown.innerHTML = lang
-        .map((language) => {
-            return `<a onclick="localStorage.setItem('lang', '${language}')">${language}</a>`;
-        })
-        .join("");
 </script>

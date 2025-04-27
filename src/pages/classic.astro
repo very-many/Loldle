@@ -1,0 +1,18 @@
+---
+import { Champions } from "../script/newDdragon.js"; //Classic mode
+import ChampSelect from "../components/champSelect.astro";
+import Layout from "../layouts/Layout.astro";
+import LanguageDropdown from "../components/languageDropdown.astro";
+import ClassicGuess from "../components/classicGuess.astro";
+
+// 📦 Server-side: Fetch and prepare champions
+const championFetcher = new Champions("15.8.1");
+const champions = await championFetcher.parse();
+---
+
+
+<Layout>
+    <LanguageDropdown />
+    <ChampSelect champions={champions}/>
+    <ClassicGuess champions={champions}/>
+</Layout>

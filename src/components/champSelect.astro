@@ -1,29 +1,27 @@
 ---
-import Welcome from "../components/Welcome.astro";
-import Layout from "../layouts/Layout.astro";
-import LanguageDropdown from "../components/languageDropdown.astro";
+import { translatorByName, translatorById } from "../script/translator.js";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+interface Props {
+    champions: any;
+}
+
+const { champions } = Astro.props;
+let lolol = champions;
 ---
 
-<Layout>
-    <LanguageDropdown />
-    <!--Make sure the form has the autocomplete function switched off:-->
-    <form autocomplete="off">
-        <div class="autocomplete" style="width:300px;">
-            <input
-                id="myInput"
-                type="text"
-                name="Champion"
-                placeholder="Champion Name"
-            />
-        </div>
-        <input type="submit" />
-    </form>
-</Layout>
+<form autocomplete="off">
+    <div class="autocomplete" style="width:300px;">
+        <input
+            id="myInput"
+            type="text"
+            name="Champion"
+            placeholder="Champion Name"
+        />
+    </div>
+    <input type="submit" />
+</form>
 
-<script src="/src/script/ddragon.js"></script>
+<!-- <script src="/src/script/ddragon.js"></script> -->
 <script src="/src/script/languageDropdown.js"></script>
 
 <style>
@@ -80,16 +78,11 @@ import LanguageDropdown from "../components/languageDropdown.astro";
     }
 </style>
 
-<script>
-    let championByNameCache = JSON.parse(
-        localStorage.getItem("championByNameCache")
-    );
-    let championByIdCache = JSON.parse(
-        localStorage.getItem("championByIdCache")
-    );
-    let champions = Object.keys(championByNameCache).map((champion) => {
-        return championByNameCache[champion].name;
+<script define:vars={{ lolol, translatorByName, translatorById }}>
+    let champions = Object.keys(lolol).map((champion) => {
+        return lolol[champion].name;
     });
+    console.log(champions);
     const selectionList = [];
     const storedChampions = localStorage.getItem("selectedChampions")
         ? localStorage.getItem("selectedChampions").split(",")
@@ -100,19 +93,20 @@ import LanguageDropdown from "../components/languageDropdown.astro";
     // Entferne den ausgewählten Champion aus dem champions-Array
     selectionList.forEach((id) => {
         console.log(id);
-        id = parseInt(id);
-        if (championByIdCache[id]) {
-            champions.splice(champions.indexOf(championByIdCache[id].name), 1);
+        if (translatorById[id]) {
+            champions.splice(champions.indexOf(translatorById[id].name), 1);
         }
     });
 
-    selectionList.forEach((id) => {
-        id = parseInt(id);
+    /* selectionList.forEach((id) => {
         console.log(id);
-        if (championByIdCache[id]) {
-            champions.splice(champions.indexOf(championByIdCache[id].name), 1);
+        if (translatorById[id]) {
+            champions.splice(champions.indexOf(translatorById[id].name), 1);
         }
-    });
+    }); */
+
+    console.log(champions);
+    console.log(selectionList);
 
     function autocomplete(inp, arr) {
         /*the autocomplete function takes two arguments,
@@ -142,18 +136,34 @@ import LanguageDropdown from "../components/languageDropdown.astro";
                 /*check if the item starts with the same letters as the text field value:*/
                 if (
                     arr[i].substr(0, val.length).toUpperCase() ==
-                    val.toUpperCase()
+                        val.toUpperCase() ||
+                    arr[i]
+                        .substr(0, val.length + 1)
+                        .toUpperCase()
+                        .replace("'", "") == val.toUpperCase()
                 ) {
                     /*create a DIV element for each matching element:*/
                     b = document.createElement("DIV");
-                    b.innerHTML = `<img src="https://ddragon.leagueoflegends.com/cdn/${localStorage.getItem("version")}/img/champion/${championByNameCache[arr[i]].id}.png" alt="X" width="20" height="20" />`;
+                    b.innerHTML = `<img src="https://ddragon.leagueoflegends.com/cdn/${localStorage.getItem("version") || "15.8.1"}/img/champion/${translatorByName[arr[i]].id}.png" alt="X" width="20" height="20" />`;
                     /*make the matching letters bold:*/
-                    b.innerHTML +=
-                        "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                    b.innerHTML += arr[i].substr(val.length);
+                    /* If substring has ', make it bold too */
+                    if (
+                        arr[i].substr(0, val.length).indexOf("'") > -1
+                    ) {
+                        b.innerHTML +=
+                            "<strong>" +
+                            arr[i].substr(0, val.length + 1) +
+                            "</strong>";
+                        b.innerHTML += arr[i].substr(val.length + 1);
+                    } else {
+                        b.innerHTML +=
+                            "<strong>" +
+                            arr[i].substr(0, val.length) +
+                            "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                    }
                     /*insert a input field that will hold the current array item's value:*/
-                    b.innerHTML +=
-                        "<input type='hidden' value='" + arr[i] + "'>";
+                    b.innerHTML += `<input type='hidden' value="${arr[i]}">`;
                     /*execute a function when someone clicks on the item value (DIV element):*/
                     b.addEventListener("click", function (e) {
                         /*insert the value for the autocomplete text field:*/
@@ -242,15 +252,16 @@ import LanguageDropdown from "../components/languageDropdown.astro";
     autocomplete(document.getElementById("myInput"), champions);
 
     function setSelection(input) {
-        let inputToKey = championByNameCache[input].key;
-        selectionList.push(inputToKey);
+        let inputToId = translatorByName[input].id;
+        console.log(inputToId);
+        selectionList.push(inputToId);
         champions.splice(champions.indexOf(input), 1);
         localStorage.setItem("selectedChampions", selectionList);
 
         // Emit the event
         window.dispatchEvent(
             new CustomEvent("championSelected", {
-                detail: inputToKey,
+                detail: inputToId,
             })
         );
     }

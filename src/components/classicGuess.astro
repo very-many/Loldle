@@ -1,0 +1,64 @@
+---
+import { translatorByName, translatorById } from "../script/translator.js";
+
+interface Props {
+    champions: any;
+}
+
+const { champions } = Astro.props;
+let lolol = champions;
+---
+
+<ul id="answerHolder">
+    <li class="grid grid-rows-1 grid-cols-8 gap-4">
+        <div class="flex justify-center items-center aspect-square">
+            <img src="https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/Aatrox.png" alt="Aatrox" width="50" height="50" />
+        </div>
+        <div class="flex justify-center items-center aspect-square">
+            Male 
+        </div>
+        <div>
+            Jungle 
+        </div>
+        <div>
+            Marksman 
+        </div>
+        <div>
+            Mana 
+        </div>
+        <div>
+            Range 
+        </div>
+        <div>
+            Shurima 
+        </div>
+        <div>
+            2012 
+        </div>
+    </li>
+</ul>
+
+<script define:vars={{ lolol, translatorByName, translatorById }}>
+    window.addEventListener("championSelected", (e) => {
+        addAnswer(lolol[e.detail]);
+    });
+
+    const answerHolder = document.getElementById("answerHolder");
+    const version = localStorage.getItem("version") || "15.8.1";
+
+    function addAnswer(champ) {
+        const li = document.createElement("li");
+        li.classList.add();
+        li.innerHTML = `
+        <img src="https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champ.id}.png" alt="${champ.name}" width="50" height="50" />
+        ${champ.gender}
+        ${champ.lane}
+        ${champ.genre}
+        ${champ.resource}
+        ${champ.attackType}
+        ${champ.region}
+        ${champ.releaseDate}`;
+        answerHolder.appendChild(li);
+    }
+
+</script>

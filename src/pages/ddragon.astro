@@ -1,0 +1,30 @@
+---
+import { Champions } from "../script/newDdragon.js"; //Classic mode
+
+// 📦 Server-side: Fetch and prepare champions
+const championFetcher = new Champions("15.8.1");
+let champions = await championFetcher.parse();
+---
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>League Champions</title>
+    </head>
+    <body>
+        <h1>League of Legends Champions</h1>
+        <ul>
+            {
+                Object.values(champions).map((champ) => (
+                    <li>
+                        <img src={`https://ddragon.leagueoflegends.com/cdn/${championFetcher.version}/img/champion/${champ.id}.png`} alt={champ.name} width="50" height="50" />
+                        <strong>{champ.name}</strong> ({champ.releaseDate}) -
+                        {champ.genre} - {champ.attackType} - {champ.gender} -
+                        {champ.skinCount} skins - {champ.resource} -{" "}
+                        {champ.title} - {champ.lane} - {champ.region}
+                    </li>
+                ))
+            }
+        </ul>
+    </body>
+</html>

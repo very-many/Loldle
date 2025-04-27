@@ -1,8 +1,9 @@
 let championByNameCache = {};
 let championByIdCache = {};
 let championJson = {};
+let language = localStorage.getItem("lang") || "en_US";
 
-async function getLatestChampionDDragon(language = "en_US") {
+async function getLatestChampionDDragon() {
     if (championJson[language]) return championJson[language];
 
     let response;
@@ -15,8 +16,10 @@ async function getLatestChampionDDragon(language = "en_US") {
             ).then(async (r) => await r.json())
         )[versionIndex++];
 
+        localStorage.setItem("version", version);
+
         response = await fetch(
-            `https://ddragon.leagueoflegends.com/cdn/${version}/data/${language}/champion.json`
+            `https://ddragon.leagueoflegends.com/cdn/${version}/data/${language}/championFull.json`
         );
     } while (!response.ok);
 
@@ -24,7 +27,7 @@ async function getLatestChampionDDragon(language = "en_US") {
     return championJson[language];
 }
 
-async function getChampionByKey(key, language = "en_US") {
+async function getChampionByKey(key) {
     // Setup cache
     if (!championByIdCache[language]) {
         let json = await getLatestChampionDDragon(language);
@@ -37,21 +40,23 @@ async function getChampionByKey(key, language = "en_US") {
             championByIdCache[language][champInfo.key] = champInfo;
         }
     }
-
+    localStorage.setItem(
+        "championByIdCache",
+        JSON.stringify(championByIdCache[language])
+    );
     return championByIdCache[language][key];
 }
 
 // NOTE: IN DDRAGON THE ID IS THE CLEAN NAME!!! It's also super-inconsistent, and broken at times.
 // Cho'gath => Chogath, Wukong => Monkeyking, Fiddlesticks => Fiddlesticks/FiddleSticks (depending on what mood DDragon is in this patch)
-async function getChampionByID(name, language = "en_US") {
+async function getChampionByID(name) {
     return await getLatestChampionDDragon(language)[name];
 }
 
-async function getChampionByName(name, language = "en_US") {
+async function getChampionByName(name) {
     // Setup cache
     if (!championByNameCache[language]) {
         let json = await getLatestChampionDDragon(language);
-        console.log(json.data);
         championByNameCache[language] = {};
         for (var championName in json.data) {
             if (!json.data.hasOwnProperty(championName)) continue;
@@ -60,29 +65,24 @@ async function getChampionByName(name, language = "en_US") {
             championByNameCache[language][champInfo.name] = champInfo;
         }
     }
-
+    localStorage.setItem(
+        "championByNameCache",
+        JSON.stringify(championByNameCache[language])
+    );
     return championByNameCache[language][name];
 }
 
 async function main() {
-    const annie = await getChampionByKey(1, "ro_RO");
-    const brand = await getChampionByID("Brand", "ro_RO");
+    const annie = await getChampionByKey(1);
+    const brand = await getChampionByID("Brand");
     const borard = await getChampionByName(`Cho'Gath`);
-
+/* 
     console.log(annie);
     console.log(brand);
     console.log(borard);
     console.log(championJson);
     console.log(championByIdCache);
-    console.log(championByNameCache);
-
-    // Save the cache to localStorage
-    if (localStorage.getItem("championByNameCache") === null) {
-        localStorage.setItem(
-            "championByNameCache",
-            JSON.stringify(championByNameCache)
-        );
-    }
+    console.log(championByNameCache); */
 }
 
 main();
