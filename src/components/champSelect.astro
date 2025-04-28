@@ -82,31 +82,27 @@ let lolol = champions;
     let champions = Object.keys(lolol).map((champion) => {
         return lolol[champion].name;
     });
-    console.log(champions);
     const selectionList = [];
-    const storedChampions = localStorage.getItem("selectedChampions")
-        ? localStorage.getItem("selectedChampions").split(",")
-        : [];
+    const storedChampions =
+        JSON.parse(localStorage.getItem("selectedChampions")) || [];
 
     // Inhalte des inneren Arrays in selectionList übernehmen
     selectionList.push(...storedChampions);
     // Entferne den ausgewählten Champion aus dem champions-Array
     selectionList.forEach((id) => {
-        console.log(id);
         if (translatorById[id]) {
             champions.splice(champions.indexOf(translatorById[id].name), 1);
         }
     });
 
-    /* selectionList.forEach((id) => {
-        console.log(id);
-        if (translatorById[id]) {
-            champions.splice(champions.indexOf(translatorById[id].name), 1);
-        }
-    }); */
-
-    console.log(champions);
-    console.log(selectionList);
+    window.addEventListener("reset", (e) => {
+        champions = Object.keys(lolol).map((champion) => {
+            return lolol[champion].name;
+        });
+        selectionList.length = 0;
+        autocomplete(document.getElementById("myInput"), champions);
+        console.log(champions);
+    });
 
     function autocomplete(inp, arr) {
         /*the autocomplete function takes two arguments,
@@ -147,9 +143,7 @@ let lolol = champions;
                     b.innerHTML = `<img src="https://ddragon.leagueoflegends.com/cdn/${localStorage.getItem("version") || "15.8.1"}/img/champion/${translatorByName[arr[i]].id}.png" alt="X" width="20" height="20" />`;
                     /*make the matching letters bold:*/
                     /* If substring has ', make it bold too */
-                    if (
-                        arr[i].substr(0, val.length).indexOf("'") > -1
-                    ) {
+                    if (arr[i].substr(0, val.length).indexOf("'") > -1) {
                         b.innerHTML +=
                             "<strong>" +
                             arr[i].substr(0, val.length + 1) +
@@ -256,8 +250,10 @@ let lolol = champions;
         console.log(inputToId);
         selectionList.push(inputToId);
         champions.splice(champions.indexOf(input), 1);
-        localStorage.setItem("selectedChampions", selectionList);
-
+        localStorage.setItem(
+            "selectedChampions",
+            JSON.stringify(selectionList)
+        );
         // Emit the event
         window.dispatchEvent(
             new CustomEvent("championSelected", {

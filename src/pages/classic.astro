@@ -4,6 +4,7 @@ import ChampSelect from "../components/champSelect.astro";
 import Layout from "../layouts/Layout.astro";
 import LanguageDropdown from "../components/languageDropdown.astro";
 import ClassicGuess from "../components/classicGuess.astro";
+import Reset from "../components/reset.astro";
 
 // 📦 Server-side: Fetch and prepare champions
 const championFetcher = new Champions("15.8.1");
@@ -15,4 +16,5 @@ const champions = await championFetcher.parse();
     <LanguageDropdown />
     <ChampSelect champions={champions}/>
     <ClassicGuess champions={champions}/>
+    <Reset />
 </Layout>

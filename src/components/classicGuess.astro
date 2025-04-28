@@ -8,43 +8,62 @@ interface Props {
 const { champions } = Astro.props;
 let lolol = champions;
 ---
-
-<ul id="answerHolder">
+<ul>
     <li class="grid grid-rows-1 grid-cols-8 gap-4">
         <div class="flex justify-center items-center aspect-square">
-            <img src="https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/Aatrox.png" alt="Aatrox" width="50" height="50" />
+            <img
+                src="https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/Aatrox.png"
+                alt="Aatrox"
+                width="50"
+                height="50"
+            />
         </div>
+        <div class="flex justify-center items-center aspect-square">Male</div>
+        <div>Jungle</div>
+        <div>Marksman</div>
+        <div>Mana</div>
+        <div>Range</div>
+        <div>Shurima</div>
+        <div>2012</div>
+    </li>
+</ul>
+<ul id="answerHolder" class="flex flex-col-reverse">
+    <li class="grid grid-rows-1 grid-cols-8 gap-4">
         <div class="flex justify-center items-center aspect-square">
-            Male 
+            <img
+                src="https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/Aatrox.png"
+                alt="Aatrox"
+                width="50"
+                height="50"
+            />
         </div>
-        <div>
-            Jungle 
-        </div>
-        <div>
-            Marksman 
-        </div>
-        <div>
-            Mana 
-        </div>
-        <div>
-            Range 
-        </div>
-        <div>
-            Shurima 
-        </div>
-        <div>
-            2012 
-        </div>
+        <div class="flex justify-center items-center aspect-square">Male</div>
+        <div>Jungle</div>
+        <div>Marksman</div>
+        <div>Mana</div>
+        <div>Range</div>
+        <div>Shurima</div>
+        <div>2012</div>
     </li>
 </ul>
 
 <script define:vars={{ lolol, translatorByName, translatorById }}>
+    const answerHolder = document.getElementById("answerHolder");
+    const version = localStorage.getItem("version") || "15.8.1";
     window.addEventListener("championSelected", (e) => {
         addAnswer(lolol[e.detail]);
     });
+    window.addEventListener("reset", (e) => {
+        console.log("reset event triggered");
+        resetGame();
+    });
+    const savedAnswers =
+        JSON.parse(localStorage.getItem("selectedChampions")) || [];
+    savedAnswers.forEach((champ) => {
+        addAnswer(lolol[champ]);
+    });
 
-    const answerHolder = document.getElementById("answerHolder");
-    const version = localStorage.getItem("version") || "15.8.1";
+    
 
     function addAnswer(champ) {
         const li = document.createElement("li");
@@ -60,5 +79,8 @@ let lolol = champions;
         ${champ.releaseDate}`;
         answerHolder.appendChild(li);
     }
-
+    
+    function resetGame() {
+        answerHolder.innerHTML = "";
+    }
 </script>
