@@ -127,7 +127,7 @@ async function fetchLanes() {
                     }
                 });
 
-                lanes[championName] = championLanes.join(", ");
+                lanes[championName] = championLanes;
             }
         });
 
@@ -265,7 +265,7 @@ export class Champions {
                 title: champion.title,
                 name: champion.name,
                 resource: champion.partype,
-                genre: champion.tags.join(", "),
+                genre: champion.tags,
                 skinCount: champion.skins.length,
                 gender: gender,
                 lane: lane,
@@ -279,6 +279,7 @@ export class Champions {
             data: mappedData,
             timestamp: now,
         };
+        console.log(mappedData["Lux"]);
         return mappedData;
     }
 

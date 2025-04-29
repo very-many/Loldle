@@ -7,47 +7,79 @@ interface Props {
 
 const { champions } = Astro.props;
 let lolol = champions;
+
+//pick random champion
+const randomChampion = () => {
+    const keys = Object.keys(lolol);
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    return lolol[randomKey];
+};
+const randomChamp = randomChampion();
 ---
-<ul>
-    <li class="grid grid-rows-1 grid-cols-8 gap-4">
-        <div class="flex justify-center items-center aspect-square">
+
+<ul class="my-8">
+    <!-- <li class="grid grid-rows-1 grid-cols-8 gap-1">
+
+        <div class="flex justify-center items-center aspect-square border-2">
             <img
                 src="https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/Aatrox.png"
                 alt="Aatrox"
-                width="50"
-                height="50"
             />
         </div>
-        <div class="flex justify-center items-center aspect-square">Male</div>
-        <div>Jungle</div>
-        <div>Marksman</div>
-        <div>Mana</div>
-        <div>Range</div>
-        <div>Shurima</div>
-        <div>2012</div>
-    </li>
-</ul>
-<ul id="answerHolder" class="flex flex-col-reverse">
-    <li class="grid grid-rows-1 grid-cols-8 gap-4">
-        <div class="flex justify-center items-center aspect-square">
-            <img
-                src="https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/Aatrox.png"
-                alt="Aatrox"
-                width="50"
-                height="50"
-            />
+        <div
+            class="flex justify-center items-center aspect-square border-2 bg-green-500"
+        >
+            Male
         </div>
-        <div class="flex justify-center items-center aspect-square">Male</div>
-        <div>Jungle</div>
-        <div>Marksman</div>
-        <div>Mana</div>
-        <div>Range</div>
-        <div>Shurima</div>
-        <div>2012</div>
-    </li>
+        <div
+            class="flex justify-center items-center aspect-square border-2 bg-red-500"
+        >
+            Jungle
+        </div>
+        <div
+            class="flex justify-center items-center aspect-square border-2 bg-green-500"
+        >
+            Marksman
+        </div>
+        <div
+            class="flex justify-center items-center aspect-square border-2 bg-green-500"
+        >
+            Mana
+        </div>
+        <div
+            class="flex justify-center items-center aspect-square border-2 bg-green-500"
+        >
+            Range
+        </div>
+        <div
+            class="flex justify-center items-center aspect-square border-2 bg-green-500"
+        >
+            Shurima
+        </div>
+        <div
+            class="flex justify-center items-center aspect-square border-2 bg-gradient-to-b from-green-500 to-red-500"
+        >
+            2012
+        </div>
+    </li> -->
+
+
 </ul>
 
-<script define:vars={{ lolol, translatorByName, translatorById }}>
+
+<ul id="answerHolder" class="flex flex-col-reverse gap-4">
+    
+</ul>
+<p class="text-white">LOL <strong>hol</strong></p>
+
+<script define:vars={{ lolol, translatorByName, translatorById, randomChamp }}>
+    const grade = {
+        Good: "Good",
+        Bad: "Bad",
+        Meh: "Meh",
+        Higher: "Higher",
+        Lower: "Lower",
+    };
     const answerHolder = document.getElementById("answerHolder");
     const version = localStorage.getItem("version") || "15.8.1";
     window.addEventListener("championSelected", (e) => {
@@ -63,23 +95,94 @@ let lolol = champions;
         addAnswer(lolol[champ]);
     });
 
-    
-
     function addAnswer(champ) {
+        const result = checkAnswer(champ);
+
         const li = document.createElement("li");
-        li.classList.add();
+        li.classList.add("grid", "grid-rows-1", "grid-cols-8", "gap-1");
         li.innerHTML = `
-        <img src="https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champ.id}.png" alt="${champ.name}" width="50" height="50" />
-        ${champ.gender}
-        ${champ.lane}
-        ${champ.genre}
-        ${champ.resource}
-        ${champ.attackType}
-        ${champ.region}
-        ${champ.releaseDate}`;
+        <div class="flex justify-center items-center aspect-square">
+        <img src="https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champ.id}.png" alt="${champ.name}"/>
+        </div>
+        `;
         answerHolder.appendChild(li);
+
+        li.appendChild(printDiv(champ.gender, result.gender));
+        li.appendChild(printDiv(champ.lane, result.lane));
+        li.appendChild(printDiv(champ.genre, result.genre));
+        li.appendChild(printDiv(champ.resource, result.resource));
+        li.appendChild(printDiv(champ.attackType, result.attackType));
+        li.appendChild(printDiv(champ.region, result.region));
+        li.appendChild(printDiv(champ.releaseDate, result.releaseDate));
+
     }
-    
+
+    function printDiv(content, res) {
+        let element = document.createElement("DIV",);
+        element.classList.add(
+            "flex",
+            "justify-center",
+            "items-center",
+            "aspect-square",
+            "border-2"
+        );
+        element.innerHTML = content;
+        if (res === grade.Good) {
+            element.classList.add("bg-green-500");
+        } else if (res === grade.Bad) {
+            element.classList.add("bg-red-500");
+        } else if (res === grade.Meh) {
+            element.classList.add("bg-yellow-500");
+        } else if (res === grade.Higher) {
+            element.classList.add(
+                "bg-gradient-to-b",
+                "from-green-500",
+                "to-red-500"
+            );
+        } else if (res === grade.Lower) {
+            element.classList.add(
+                "bg-gradient-to-b",
+                "from-red-500",
+                "to-green-500"
+            );
+        }
+        console.log(element);
+        return element;
+    }
+
+    function checkAnswer(champ) {
+        let result = {};
+
+        result["gender"] = trueFalse(champ.gender, randomChamp.gender);
+        result["lane"] = trueFalseMeh(champ.lane, randomChamp.lane);
+        result["genre"] = trueFalseMeh(champ.genre, randomChamp.genre);
+        result["resource"] = trueFalse(champ.resource, randomChamp.resource);
+        result["attackType"] = trueFalse(
+            champ.attackType,
+            randomChamp.attackType
+        );
+        result["region"] = trueFalse(champ.region, randomChamp.region);
+        result["releaseDate"] = higherLower(
+            champ.releaseDate,
+            randomChamp.releaseDate
+        );
+        console.log(champ, randomChamp);
+        console.log(result);
+        return result;
+    }
+
+    function trueFalseMeh(x, y) {
+        if (JSON.stringify(x) === JSON.stringify(y)) return grade.Good;
+        if (y.some((r) => x.includes(r))) return grade.Meh;
+        return grade.Bad;
+    }
+    function trueFalse(x, y) {
+        return x === y ? grade.Good : grade.Bad;
+    }
+    function higherLower(x, y) {
+        return x === y ? grade.Good : y > x ? grade.Higher : grade.Lower;
+    }
+
     function resetGame() {
         answerHolder.innerHTML = "";
     }
