@@ -6,8 +6,9 @@ let cache = {
     answer: null,
     timestamp: 0,
 };
-const CACHE_DURATION = 1000 * 60 * 60 * 24; // 24 hours
-
+const CACHE_DURATION = 1000 * 60; // 1min
+/* const CACHE_DURATION = 1000 * 60 * 60 * 24; // 24 hours
+ */
 // 📥 Fetch release dates with caching
 async function fetchReleaseDates() {
     const url = `https://corsproxy.io/?url=https://leagueoflegends.fandom.com/wiki/List_of_champions`;
