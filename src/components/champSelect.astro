@@ -166,7 +166,7 @@ let lolol = champions;
                     b.innerHTML = `<img class="mr-2" src="https://ddragon.leagueoflegends.com/cdn/${localStorage.getItem("version") || "15.8.1"}/img/champion/${translatorByName[arr[i]].id}.png" alt="X" width="40" height="40" />`;
                     /*make the matching letters bold:*/
                     /* If substring has ', make it bold too */
-                    let p = document.createElement("p")
+                    let p = document.createElement("p");
                     if (
                         arr[i].substr(0, val.length).indexOf("'") > -1 &&
                         val.indexOf("'") == -1
@@ -175,7 +175,7 @@ let lolol = champions;
                             "<strong>" +
                             arr[i].substr(0, val.length + 1) +
                             "</strong>";
-                            p.innerHTML += arr[i].substr(val.length + 1);
+                        p.innerHTML += arr[i].substr(val.length + 1);
                     } else if (
                         arr[i].indexOf(" ") > -1
                             ? arr[i]
@@ -184,18 +184,26 @@ let lolol = champions;
                                   .toUpperCase() == val.toUpperCase()
                             : false
                     ) {
-                        p.innerHTML += arr[i].substr(0, arr[i].indexOf(" ") + 1);
-                        p.innerHTML += 
+                        p.innerHTML += arr[i].substr(
+                            0,
+                            arr[i].indexOf(" ") + 1
+                        );
+                        p.innerHTML +=
                             "<strong>" +
-                            arr[i].slice(arr[i].indexOf(" ") + 1, arr[i].indexOf(" ") + 1 + val.length)
-                            "</strong>";
-                            p.innerHTML += arr[i].substr(arr[i].indexOf(" ") + 1 + val.length);
+                            arr[i].slice(
+                                arr[i].indexOf(" ") + 1,
+                                arr[i].indexOf(" ") + 1 + val.length
+                            );
+                        ("</strong>");
+                        p.innerHTML += arr[i].substr(
+                            arr[i].indexOf(" ") + 1 + val.length
+                        );
                     } else {
                         p.innerHTML +=
                             "<strong>" +
                             arr[i].substr(0, val.length) +
                             "</strong>";
-                            p.innerHTML += arr[i].substr(val.length);
+                        p.innerHTML += arr[i].substr(val.length);
                     }
                     b.appendChild(p);
                     /*insert a input field that will hold the current array item's value:*/
@@ -204,6 +212,13 @@ let lolol = champions;
                     b.addEventListener("click", function (e) {
                         /*insert the value for the autocomplete text field:*/
                         inp.value = this.getElementsByTagName("input")[0].value;
+                        /* Überprüfe, ob der eingegebene Wert in der Champions-Liste enthalten ist: */
+                        if (champions.includes(inp.value)) {
+                            /* Sende das Formular ab: */
+                            setSelection(inp.value);
+                            inp.value = "";
+                            //inp.form.submit();
+                        }
                         /*close the list of autocompleted values,
                   (or any other open lists of autocompleted values:*/
                         closeAllLists();
@@ -241,13 +256,6 @@ let lolol = champions;
                         x[0].click();
                     }
                 }
-                /* Überprüfe, ob der eingegebene Wert in der Champions-Liste enthalten ist: */
-                if (champions.includes(inp.value)) {
-                    /* Sende das Formular ab: */
-                    setSelection(inp.value);
-                    inp.value = "";
-                    //inp.form.submit();
-                }
             }
         });
         function addActive(x) {
@@ -258,12 +266,12 @@ let lolol = champions;
             if (currentFocus >= x.length) currentFocus = 0;
             if (currentFocus < 0) currentFocus = x.length - 1;
             /*add class "autocomplete-active":*/
-            x[currentFocus].classList.add("autocomplete-active");
+            x[currentFocus].classList.add("autocomplete-active", "bg-gray-700");
         }
         function removeActive(x) {
             /*a function to remove the "active" class from all autocomplete items:*/
             for (var i = 0; i < x.length; i++) {
-                x[i].classList.remove("autocomplete-active");
+                x[i].classList.remove("autocomplete-active", "bg-gray-700");
             }
         }
         function closeAllLists(elmnt) {
