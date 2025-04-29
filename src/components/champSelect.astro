@@ -6,7 +6,8 @@ interface Props {
 }
 
 const { champions } = Astro.props;
-let lolol = champions;
+let lolol = champions.data;
+console.log(champions.answer);
 ---
 
 <form autocomplete="off">
@@ -78,6 +79,7 @@ let lolol = champions;
 </style>
 
 <script define:vars={{ lolol, translatorByName, translatorById }}>
+    console.log(lolol.timestamp);
     let champions = Object.keys(lolol).map((champion) => {
         return lolol[champion].name;
     });
@@ -143,9 +145,10 @@ let lolol = champions;
             for (i = 0; i < arr.length; i++) {
                 /*check if the item starts with the same letters as the text field value:*/
                 const normalizedVal = val.toUpperCase();
-                const normalizedItem = arr[i].toUpperCase().replace("'", "");
+                const normalizedItem = arr[i].toUpperCase();
+                const overlyNormalizedItem = arr[i].toUpperCase().replace("'", "");
                 const hasSpace = arr[i].indexOf(" ") > -1;
-                const matchesStart = normalizedItem.startsWith(normalizedVal);
+                const matchesStart = normalizedItem.startsWith(normalizedVal) ? true : overlyNormalizedItem.startsWith(normalizedVal);
                 const matchesAfterSpace = hasSpace
                     ? arr[i]
                           .slice(arr[i].indexOf(" ") + 1)

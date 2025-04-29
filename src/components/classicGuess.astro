@@ -6,15 +6,9 @@ interface Props {
 }
 
 const { champions } = Astro.props;
-let lolol = champions;
+let lolol = champions.data;
 
-//pick random champion
-const randomChampion = () => {
-    const keys = Object.keys(lolol);
-    const randomKey = keys[Math.floor(Math.random() * keys.length)];
-    return lolol[randomKey];
-};
-const randomChamp = randomChampion();
+const randomChamp = champions.answer;
 ---
 
 <ul class="my-8">

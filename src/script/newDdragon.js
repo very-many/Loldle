@@ -3,6 +3,7 @@ import { translatorByName, translatorById } from "./translator.js";
 // Memory cache (for 24 hours)
 let cache = {
     data: null,
+    answer: null,
     timestamp: 0,
 };
 const CACHE_DURATION = 1000 * 60 * 60 * 24; // 24 hours
@@ -24,7 +25,10 @@ async function fetchReleaseDates() {
     $("table.article-table tbody tr").each((_, row) => {
         const columns = $(row).find("td");
         if (columns.length >= 3) {
-            const championName = $(columns[0]).find("a").attr("title").split('/')[0];
+            const championName = $(columns[0])
+                .find("a")
+                .attr("title")
+                .split("/")[0];
             if (championName) {
                 const championKey = translatorByName[championName]?.id; // Use the key from translatorByName
                 const yearText = $(columns[2]).text().trim().slice(6, 10);
@@ -110,9 +114,10 @@ async function fetchLanes() {
             const columns = $(row).find("td");
             if (!columns.length) return;
 
-            const championName = translatorByName[
-                $(columns[0]).find("a").attr("title")?.replace("/LoL", "")
-            ]?.id;
+            const championName =
+                translatorByName[
+                    $(columns[0]).find("a").attr("title")?.replace("/LoL", "")
+                ]?.id;
 
             if (championName) {
                 let championLanes = [];
@@ -171,7 +176,8 @@ async function fetchRegions() {
             const data = await response.json();
             const regionChampions = data["associated-champions"] || [];
             regionChampions.forEach((champion) => {
-                const championName = translatorByName[champion.name.replace(`’`, `'`)].id;
+                const championName =
+                    translatorByName[champion.name.replace(`’`, `'`)].id;
                 if (regionsData[championName]) {
                     regionsData[championName] += `, ${data.faction.name}`;
                 } else {
@@ -222,30 +228,42 @@ export class Champions {
     }
 
     async parse() {
-        if (!this.championsData) {
-            await this.fetchData();
-        }
-        return this.mapData(this.championsData);
-    }
-
-    async mapData(champions) {
         const now = Date.now();
         if (cache.data && now - cache.timestamp < CACHE_DURATION) {
             console.log("Serving from cache...");
-            return cache.data;
+            return cache;
         }
-    
         console.log("Fetching fresh...");
-    
+
+        if (!this.championsData) {
+            await this.fetchData();
+        }
+
+        const mappedData = await this.mapData(this.championsData);
+
+        cache = {
+            data: mappedData,
+            answer: mappedData[
+                Object.keys(mappedData)[
+                    Math.floor(Math.random() * Object.keys(mappedData).length)
+                ]
+            ],
+            timestamp: now,
+        };
+        console.log(cache.answer);
+        return cache;
+    }
+
+    async mapData(champions) {
         const [releaseDates, lanes, regions] = await Promise.all([
             fetchReleaseDates(),
             fetchLanes(),
             fetchRegions(),
         ]);
-    
+
         const mappedData = {};
         const championArray = Object.values(champions);
-    
+
         const genders = await concurrentMap(
             championArray,
             async (champion) => ({
@@ -254,17 +272,17 @@ export class Champions {
             }),
             10
         );
-    
+
         genders.forEach(({ champion, gender }) => {
             const releaseDate = releaseDates[champion.id] || null;
             const lane = lanes[champion.id] || "unknown";
             const region = regions[champion.id] || "Runeterra";
-    
+
             mappedData[champion.id] = {
                 id: champion.id,
                 title: champion.title,
                 name: champion.name,
-                resource: champion.partype,
+                resource: champion.partype == "" ? "None" : champion.partype,
                 genre: champion.tags,
                 skinCount: champion.skins.length,
                 gender: gender,
@@ -274,12 +292,7 @@ export class Champions {
                 releaseDate: releaseDate,
             };
         });
-    
-        cache = {
-            data: mappedData,
-            timestamp: now,
-        };
-        console.log(mappedData["Lux"]);
+
         return mappedData;
     }
 
