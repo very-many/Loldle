@@ -1,15 +1,24 @@
 import * as cheerio from "cheerio";
 import { translatorByName, translatorById } from "./translator.js";
+
+
 // Memory cache (for 24 hours)
 let cache = {
     data: null,
     answer: null,
+    lastAnswer: null,
     timestamp: 0,
+    expiration: 0,
 };
-const CACHE_DURATION = 1000 * 60; // 1min
-/* const CACHE_DURATION = 1000 * 60 * 60 * 24; // 24 hours
- */
-// 📥 Fetch release dates with caching
+
+// Calculate the time remaining until midnight
+function getTimeUntilMidnight() {
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1); // Next midnight
+    return midnight.getTime() - now.getTime(); // Milliseconds until midnight
+}
+
+// Fetch release dates
 async function fetchReleaseDates() {
     const url = `https://corsproxy.io/?url=https://leagueoflegends.fandom.com/wiki/List_of_champions`;
 
@@ -230,7 +239,7 @@ export class Champions {
 
     async parse() {
         const now = Date.now();
-        if (cache.data && now - cache.timestamp < CACHE_DURATION) {
+        if (cache.data && now < cache.expiration) {
             console.log("Serving from cache...");
             return cache;
         }
@@ -250,6 +259,7 @@ export class Champions {
                 ]
             ],
             timestamp: now,
+            expiration: now + getTimeUntilMidnight(), // Set expiration to midnight
         };
         console.log(cache.answer);
         return cache;
