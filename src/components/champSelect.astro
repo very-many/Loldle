@@ -166,7 +166,7 @@ let lolol = champions;
                     b.innerHTML = `<img class="mr-2" src="https://ddragon.leagueoflegends.com/cdn/${localStorage.getItem("version") || "15.8.1"}/img/champion/${translatorByName[arr[i]].id}.png" alt="X" width="40" height="40" />`;
                     /*make the matching letters bold:*/
                     /* If substring has ', make it bold too */
-                    let p = document.createElement("p");
+                    let p = document.createElement("p")
                     if (
                         arr[i].substr(0, val.length).indexOf("'") > -1 &&
                         val.indexOf("'") == -1
@@ -203,7 +203,7 @@ let lolol = champions;
                             "<strong>" +
                             arr[i].substr(0, val.length) +
                             "</strong>";
-                        p.innerHTML += arr[i].substr(val.length);
+                            p.innerHTML += arr[i].substr(val.length);
                     }
                     b.appendChild(p);
                     /*insert a input field that will hold the current array item's value:*/
