@@ -243,6 +243,12 @@ export class Champions {
             console.log("Serving from cache...");
             return cache;
         }
+        if (cache.data && now > cache.expiration) {
+            console.log("Cache expired");
+        }
+        if (!cache.data) {
+            console.log("Cache empty");
+        }
         console.log("Fetching fresh...");
 
         if (!this.championsData) {
