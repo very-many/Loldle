@@ -1,6 +1,11 @@
 import * as cheerio from "cheerio";
+import fs from "fs";
+import path from "path"; // for cross-platform compatibility
+
 import { translatorByName, translatorById } from "./translator.js";
 
+const dataDir = path.resolve("src", "data");
+const jsonFilePath = path.join(dataDir, "data.json");
 
 // Memory cache (for 24 hours)
 let cache = {
@@ -11,11 +16,32 @@ let cache = {
     expiration: 0,
 };
 
+function writeCacheToFile() {
+    // Ensure the dir exists
+    if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true }); // Create the directory if it doesn't exist
+    }
+
+    // Write the file to /src/data/data.json
+    const filePath = path.join(dataDir, "data.json");
+    fs.writeFile(filePath, JSON.stringify(cache), (err) => {
+        if (err) {
+            console.error("Error writing file:", err);
+        } else {
+            console.log(`File written successfully to ${filePath}`);
+        }
+    });
+}
+
 // Calculate the time remaining until midnight
 function getTimeUntilMidnight() {
     const now = new Date();
-    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1); // Next midnight
-    return midnight.getTime() - now.getTime(); // Milliseconds until midnight
+    const midnight = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1
+    ); // Next midnight
+    return midnight.toISOString(); // Milliseconds until midnight
 }
 
 // Fetch release dates
@@ -222,6 +248,42 @@ async function concurrentMap(items, mapper, concurrency = 10) {
     return Promise.all(results);
 }
 
+function checkCache() {
+    const now = new Date().toISOString();
+    if (cache.data && now < cache.expiration) {
+        console.log("Serving from cache...");
+        return true;
+    }
+    if (cache.data && now > cache.expiration) {
+        console.log("Cache expired");
+        return false;
+    }
+    if (!cache.data && jsonFilePath) {
+        try {
+            const fileData = fs.readFileSync(jsonFilePath, "utf8");
+            const parsedCache = JSON.parse(fileData);
+            if (parsedCache.data && now < parsedCache.expiration) {
+                cache = parsedCache;
+                console.log("Cache loaded from file and is valid.");
+                return true;
+            } else {
+                if (!parsedCache.data) {
+                    console.log(parsedCache.data);
+                    console.log("Cache loaded from file but is invalid.");
+                    return false;
+                }
+                console.log(now + " " + parsedCache.expiration);
+                console.log("Cache loaded from file but is expired.");
+                return false;
+            }
+        } catch (err) {
+            console.error("Error reading cache file:", err);
+            return false;
+        }
+    }
+    console.log("Cache is empty and no valid file found.");
+    return false;
+}
 // 💬 Champions class
 export class Champions {
     constructor(version) {
@@ -238,16 +300,9 @@ export class Champions {
     }
 
     async parse() {
-        const now = Date.now();
-        if (cache.data && now < cache.expiration) {
-            console.log("Serving from cache...");
+        const now = new Date();
+        if (checkCache()) {
             return cache;
-        }
-        if (cache.data && now > cache.expiration) {
-            console.log("Cache expired");
-        }
-        if (!cache.data) {
-            console.log("Cache empty");
         }
         console.log("Fetching fresh...");
 
@@ -264,9 +319,10 @@ export class Champions {
                     Math.floor(Math.random() * Object.keys(mappedData).length)
                 ]
             ],
-            timestamp: now,
-            expiration: now + getTimeUntilMidnight(), // Set expiration to midnight
+            timestamp: now.toISOString(),
+            expiration: getTimeUntilMidnight(), // Set expiration to midnight
         };
+        writeCacheToFile();
         console.log(cache.answer);
         return cache;
     }
