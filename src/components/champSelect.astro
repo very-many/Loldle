@@ -78,10 +78,10 @@ let lolol = champions.data;
 </style>
 
 <script define:vars={{ lolol, translatorByName, translatorById }}>
-    console.log(lolol.timestamp);
     let champions = Object.keys(lolol).map((champion) => {
         return lolol[champion].name;
     });
+    let gameOver = false;
     const selectionList = [];
     const storedChampions =
         JSON.parse(localStorage.getItem("selectedChampions")) || [];
@@ -101,7 +101,6 @@ let lolol = champions.data;
         });
         selectionList.length = 0;
         autocomplete(document.getElementById("myInput"), champions);
-        console.log(champions);
     });
 
     function autocomplete(inp, arr) {
@@ -298,8 +297,10 @@ let lolol = champions.data;
     autocomplete(document.getElementById("myInput"), champions);
 
     function setSelection(input) {
+        if (gameOver) {
+            return;
+        }
         let inputToId = translatorByName[input].id;
-        console.log(inputToId);
         selectionList.push(inputToId);
         champions.splice(champions.indexOf(input), 1);
         localStorage.setItem(
@@ -313,6 +314,13 @@ let lolol = champions.data;
             })
         );
     }
+
+    window.addEventListener("gameOver", (e) => {
+        gameOver = true;
+    });
+    window.addEventListener("reset", (e) => {
+        gameOver = false;
+    });
 
     /* // Listen for events (do this once when the page loads)
     window.addEventListener("championSelected", (e) => {

@@ -44,6 +44,20 @@ function getTimeUntilMidnight() {
     return midnight.toISOString(); // Milliseconds until midnight
 }
 
+function normalizeChampionName(name) {
+    name = name.replace(`’`, `'`);
+    if (name === "Rhaast") {
+        return "Kayn";
+    }
+    if (name === "Nunu") {
+        return "Nunu & Willump";
+    }
+    if (name === "Willump") {
+        return "Nunu & Willump";
+    }
+    return name;
+}
+
 // Fetch release dates
 async function fetchReleaseDates() {
     const url = `https://corsproxy.io/?url=https://leagueoflegends.fandom.com/wiki/List_of_champions`;
@@ -159,13 +173,19 @@ async function fetchLanes() {
                 let championLanes = [];
 
                 columns.each((index, column) => {
-                    const imgTag = $(column).find('img[alt="Yes"]');
-                    if (imgTag.length) {
+                    const dataSortValue = $(column).attr("data-sort-value");
+                    /* if (["1", "2", "3"].includes(dataSortValue)) {
                         const detectedLane = columnLaneMap[index];
                         if (detectedLane) {
                             championLanes.push(detectedLane);
                         }
-                    }
+                    } */
+                        if (["1", "2"].includes(dataSortValue)) {
+                            const detectedLane = columnLaneMap[index];
+                            if (detectedLane) {
+                                championLanes.push(detectedLane);
+                            }
+                        }
                 });
 
                 lanes[championName] = championLanes;
@@ -213,12 +233,11 @@ async function fetchRegions() {
             const regionChampions = data["associated-champions"] || [];
             regionChampions.forEach((champion) => {
                 const championName =
-                    translatorByName[champion.name.replace(`’`, `'`)].id;
-                if (regionsData[championName]) {
-                    regionsData[championName] += `, ${data.faction.name}`;
-                } else {
-                    regionsData[championName] = data.faction.name;
+                    translatorByName[normalizeChampionName(champion.name)].id;
+                if (!regionsData[championName]) {
+                    regionsData[championName] = []; // Initialize as an array
                 }
+                regionsData[championName].push(data.faction.name);
             });
         } catch (error) {
             console.error(`Error fetching region data for ${region}:`, error);
@@ -226,6 +245,225 @@ async function fetchRegions() {
     }
 
     return regionsData; // Return the mapping of champion names to regions
+}
+
+async function fetchSpecies() {
+    const species = {
+        //Main sapient species
+        //"Ascended",
+        Brackern: {
+            name: "Brackern",
+            fields: [1, 1],
+        },
+        Celestial: {
+            name: "Celestial",
+            fields: [1, 1],
+        },
+        Dragon: {
+            name: "Dragon",
+            fields: [1, 1],
+        },
+        Golem: {
+            name: "Golem",
+            fields: [1, 1],
+        },
+        Human: {
+            name: "Human",
+            fields: [1, 7],
+        },
+        Minotaur: {
+            name: "Minotaur",
+            fields: [1, 1],
+        },
+        Spirit: {
+            name: "Spirit",
+            fields: [1, 1],
+        },
+        Troll: {
+            name: "Troll",
+            fields: [1, 1],
+        },
+        //"Undead",
+        Vastaya: {
+            name: "Vastaya",
+            fields: [1, 1],
+        },
+        Voidborn: {
+            name: "Voidborn",
+            fields: [1, 1],
+        },
+        Yeti: {
+            name: "Yeti",
+            fields: [1, 1],
+        },
+
+        //Lesser sapient species
+        Cat: {
+            name: "Cat",
+            fields: [1, 1],
+        },
+        Dog: {
+            //???
+            name: "Dog",
+            fields: [1, 1],
+        },
+        Rat: {
+            name: "Rat",
+            fields: [1, 1],
+        },
+
+        //Sapient sub species
+        //Ascended
+        Aspect_Host: {
+            name: "Aspect",
+            fields: [1, 1],
+        },
+        Baccai: {
+            name: "Baccai",
+            fields: [1, 1],
+        },
+        Darkin: {
+            name: "Darkin",
+            fields: [1, 1],
+        },
+        "God-Warrior": {
+            name: "God-Warrior",
+            fields: [1, 1],
+        },
+
+        //Spirit
+        Demon: {
+            name: "Demon",
+            fields: [1, 1],
+        },
+        Yordle: {
+            name: "Yordle",
+            fields: [1, 1],
+        },
+        Spirit_God: {
+            name: "God",
+            fields: [1, 1],
+        },
+
+        //Undead
+        Revenant: {
+            name: "Revenant",
+            fields: [1, 1],
+        },
+        Wraith: {
+            name: "Wraith",
+            fields: [1, 1],
+        },
+
+        //Human addons
+        /* https://leagueoflegends.fandom.com/wiki/Human#Show ----- Here are many listet, maybe kinda reduce fetches if already there */
+        Magical: {
+            name: "Magicborn",
+            fields: [1, 1],
+        },
+        Iceborn: {
+            name: "Iceborn",
+            fields: [1, 1],
+        },
+        Cyborg: {
+            name: "Cyborg",
+            fields: [1, 1],
+        },
+        Magical_Alteration: {
+            name: "Magically Altered",
+            fields: [3, 3], //in wiki it's field  3
+        },
+        Chemical_Alteration: {
+            name: "Chemically Altered",
+            fields: [1, 1],
+        },
+        Void_Touched: {
+            name: "Void Touched",
+            fields: [0, 0], //in wiki it's field  0
+        },
+    }; // List of species to scrape
+
+    const speciesData = {}; // Map to store champion-to-species mapping
+
+    for (const oneSpecies of Object.keys(species)) {
+        try {
+            const response = await fetch(
+                `https://corsproxy.io/?url=https://leagueoflegends.fandom.com/wiki/${oneSpecies}`
+            );
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            console.log(`Fetched species data for ${oneSpecies} successfully.`);
+
+            const html = await response.text();
+            const $ = cheerio.load(html);
+
+            // Select all <a> elements inside the gallery and extract their text
+            const champions = [];
+            for (
+                let i = species[oneSpecies].fields[0];
+                i <= species[oneSpecies].fields[1];
+                i++
+            ) {
+                $(`#gallery-${i} .wikia-gallery-item .lightbox-caption a`).each(
+                    (_, element) => {
+                        const championName = $(element).text().trim(); // Extract the inner text
+                        if (!champions.includes(championName)) {
+                            champions.push(championName);
+                        }
+                    }
+                );
+            }
+
+            console.log(
+                species[oneSpecies].name +
+                    " " +
+                    champions.length +
+                    " champions found"
+            );
+            // Map each champion to the current species
+            champions.forEach((champion) => {
+                try {
+                    const championName =
+                        translatorByName[normalizeChampionName(champion)].id;
+                    if (!speciesData[championName]) {
+                        speciesData[championName] = []; // Initialize as an array
+                    }
+                    if (
+                        !speciesData[championName].includes(
+                            species[oneSpecies].name
+                        )
+                    ) {
+                        speciesData[championName].push(
+                            species[oneSpecies].name
+                        ); // Add the species to the array
+                    }
+                } catch (error) {
+                    console.error(
+                        `Error processing champion ${champion} bzw. ${normalizeChampionName(
+                            champion
+                        )}`
+                    );
+                }
+            });
+        } catch (error) {
+            console.error(`Error fetching species data for ${oneSpecies}:`);
+        }
+    }
+
+    let orderedSpeciesData = Object.keys(speciesData)
+        .sort()
+        .reduce((obj, key) => {
+            obj[key] = speciesData[key];
+            return obj;
+        }, {});
+    Object.values(orderedSpeciesData).forEach((oneOrderedSpeciesData) => {
+        oneOrderedSpeciesData.sort();
+    });
+    console.log("Species data fetched successfully.");
+    return orderedSpeciesData; // Return the mapping of champions to species
 }
 
 async function concurrentMap(items, mapper, concurrency = 10) {
@@ -256,6 +494,7 @@ function checkCache() {
     }
     if (cache.data && now > cache.expiration) {
         console.log("Cache expired");
+        cache[lastAnswer] = cache.answer;
         return false;
     }
     if (!cache.data && jsonFilePath) {
@@ -274,10 +513,11 @@ function checkCache() {
                 }
                 console.log(now + " " + parsedCache.expiration);
                 console.log("Cache loaded from file but is expired.");
+                cache[lastAnswer] = cache.answer;
                 return false;
             }
         } catch (err) {
-            console.error("Error reading cache file:", err);
+            console.error("Error reading cache file: (ig no such file or dir)");
             return false;
         }
     }
@@ -319,6 +559,7 @@ export class Champions {
                     Math.floor(Math.random() * Object.keys(mappedData).length)
                 ]
             ],
+            lastAnswer: cache.lastAnswer || null,
             timestamp: now.toISOString(),
             expiration: getTimeUntilMidnight(), // Set expiration to midnight
         };
@@ -328,10 +569,11 @@ export class Champions {
     }
 
     async mapData(champions) {
-        const [releaseDates, lanes, regions] = await Promise.all([
+        const [releaseDates, lanes, regions, speciesList] = await Promise.all([
             fetchReleaseDates(),
             fetchLanes(),
             fetchRegions(),
+            fetchSpecies(),
         ]);
 
         const mappedData = {};
@@ -347,22 +589,25 @@ export class Champions {
         );
 
         genders.forEach(({ champion, gender }) => {
-            const releaseDate = releaseDates[champion.id] || null;
             const lane = lanes[champion.id] || "unknown";
+            const species = speciesList[champion.id] || ["unknown"];
             const region = regions[champion.id] || "Runeterra";
+            const releaseDate = releaseDates[champion.id] || "unknown";
 
             mappedData[champion.id] = {
                 id: champion.id,
-                title: champion.title,
                 name: champion.name,
-                resource: champion.partype == "" ? "None" : champion.partype,
-                genre: champion.tags,
-                skinCount: champion.skins.length,
-                gender: gender,
                 lane: lane,
-                region: region,
+                species: species,
+                resource: champion.partype == "" ? "None" : champion.partype,
+                gender: gender,
                 attackType: this.getAttackType(champion),
+                region: region,
                 releaseDate: releaseDate,
+
+                genre: champion.tags,
+                title: champion.title,
+                skinCount: champion.skins.length,
             };
         });
 
@@ -370,6 +615,11 @@ export class Champions {
     }
 
     getAttackType(champion) {
+        const mixedChampions = ["Nidalee", "Jayce", "Elise"];
+        if (mixedChampions.includes(champion.id)) {
+            return "Mixed";
+        }
+
         const attackRange = champion.stats.attackrange;
         return attackRange < 350 ? "Close" : "Range";
     }
