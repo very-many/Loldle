@@ -3,10 +3,12 @@ import { translatorByName, translatorById } from "../script/translator.js";
 
 interface Props {
     champions: any;
+    mode: string;
 }
 
-const { champions } = Astro.props;
+const { champions, mode } = Astro.props;
 let lolol = champions.data;
+const resetTime = champions.expiration;
 ---
 
 <form autocomplete="off">
@@ -77,14 +79,23 @@ let lolol = champions.data;
     }
 </style>
 
-<script define:vars={{ lolol, translatorByName, translatorById }}>
+<script define:vars={{ lolol, translatorByName, translatorById, mode, resetTime }}>
     let champions = Object.keys(lolol).map((champion) => {
         return lolol[champion].name;
     });
     let gameOver = false;
+    
+    if (localStorage.getItem("resetTime") == null) {
+        localStorage.setItem("resetTime", resetTime);
+    } else if (localStorage.getItem("resetTime") != resetTime) {
+        const event = new CustomEvent("reset");
+        window.dispatchEvent(event);
+        localStorage.setItem("resetTime", resetTime);
+    }
+
     const selectionList = [];
     const storedChampions =
-        JSON.parse(localStorage.getItem("selectedChampions")) || [];
+        JSON.parse(localStorage.getItem(`selectedChampions${mode}`)) || [];
 
     // Inhalte des inneren Arrays in selectionList übernehmen
     selectionList.push(...storedChampions);
@@ -101,6 +112,7 @@ let lolol = champions.data;
         });
         selectionList.length = 0;
         autocomplete(document.getElementById("myInput"), champions);
+        gameOver = false;
     });
 
     function autocomplete(inp, arr) {
@@ -304,7 +316,7 @@ let lolol = champions.data;
         selectionList.push(inputToId);
         champions.splice(champions.indexOf(input), 1);
         localStorage.setItem(
-            "selectedChampions",
+            `selectedChampions${mode}`,
             JSON.stringify(selectionList)
         );
         // Emit the event
@@ -317,9 +329,6 @@ let lolol = champions.data;
 
     window.addEventListener("gameOver", (e) => {
         gameOver = true;
-    });
-    window.addEventListener("reset", (e) => {
-        gameOver = false;
     });
 
     /* // Listen for events (do this once when the page loads)

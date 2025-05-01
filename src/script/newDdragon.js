@@ -253,7 +253,7 @@ async function fetchSpecies() {
         //"Ascended",
         Brackern: {
             name: "Brackern",
-            fields: [1, 1],
+            fields: [2, 2],
         },
         Celestial: {
             name: "Celestial",
@@ -302,11 +302,11 @@ async function fetchSpecies() {
             name: "Cat",
             fields: [1, 1],
         },
-        Dog: {
+        /* Dog: {
             //???
             name: "Dog",
             fields: [1, 1],
-        },
+        }, */
         Rat: {
             name: "Rat",
             fields: [1, 1],
@@ -494,7 +494,7 @@ function checkCache() {
     }
     if (cache.data && now > cache.expiration) {
         console.log("Cache expired");
-        cache[lastAnswer] = cache.answer;
+        cache.lastAnswer = cache.answer;
         return false;
     }
     if (!cache.data && jsonFilePath) {
@@ -513,7 +513,7 @@ function checkCache() {
                 }
                 console.log(now + " " + parsedCache.expiration);
                 console.log("Cache loaded from file but is expired.");
-                cache[lastAnswer] = cache.answer;
+                cache.lastAnswer = parsedCache.answer;
                 return false;
             }
         } catch (err) {
@@ -559,7 +559,7 @@ export class Champions {
                     Math.floor(Math.random() * Object.keys(mappedData).length)
                 ]
             ],
-            lastAnswer: cache.lastAnswer || null,
+            lastAnswer: cache.lastAnswer,
             timestamp: now.toISOString(),
             expiration: getTimeUntilMidnight(), // Set expiration to midnight
         };
@@ -569,12 +569,17 @@ export class Champions {
     }
 
     async mapData(champions) {
+        let stopWatch = new Date();
         const [releaseDates, lanes, regions, speciesList] = await Promise.all([
             fetchReleaseDates(),
             fetchLanes(),
             fetchRegions(),
             fetchSpecies(),
         ]);
+
+        console.log(
+            `Fetched data in ${(((new Date() - stopWatch)) / 1000).toFixed(2)} seconds`
+        );
 
         const mappedData = {};
         const championArray = Object.values(champions);
@@ -588,17 +593,22 @@ export class Champions {
             10
         );
 
+        console.log(
+            `Fetched genders in ${(((new Date() - stopWatch)) / 1000).toFixed(2)} seconds`
+        );
+
         genders.forEach(({ champion, gender }) => {
             const lane = lanes[champion.id] || "unknown";
             const species = speciesList[champion.id] || ["unknown"];
             const region = regions[champion.id] || "Runeterra";
             const releaseDate = releaseDates[champion.id] || "unknown";
 
+
             mappedData[champion.id] = {
                 id: champion.id,
                 name: champion.name,
                 lane: lane,
-                species: species,
+                species: species == "unknown" && champion.id == "Ambessa" ? ["Human"] : species,
                 resource: champion.partype == "" ? "None" : champion.partype,
                 gender: gender,
                 attackType: this.getAttackType(champion),
@@ -610,6 +620,10 @@ export class Champions {
                 skinCount: champion.skins.length,
             };
         });
+
+        console.log(
+            `Mapped data in ${(((new Date() - stopWatch)) / 1000).toFixed(2)} seconds`
+        );
 
         return mappedData;
     }

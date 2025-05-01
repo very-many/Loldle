@@ -3,7 +3,7 @@
 <script>
     const resetButton = document.getElementById("Reset");
     resetButton?.addEventListener("click", () => {
-        localStorage.removeItem("selectedChampions");
+        localStorage.removeItem("selectedChampionsClassic");
         const event = new CustomEvent("reset");
         window.dispatchEvent(event);
     });

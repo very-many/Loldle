@@ -9,8 +9,6 @@ const { champions } = Astro.props;
 let lolol = champions.data;
 
 const randomChamp = champions.answer;
-const lastRandomChamp = champions.lastAnswer;
-console.log("last Random champion:", lastRandomChamp);
 ---
 
 <ul class="my-8">
@@ -63,7 +61,7 @@ console.log("last Random champion:", lastRandomChamp);
 <ul id="answerHolder" class="flex flex-col-reverse gap-4"></ul>
 <p class="text-white">LOL <strong>hol</strong></p>
 
-<script define:vars={{ lolol, translatorByName, translatorById, randomChamp, lastRandomChamp }}>
+<script define:vars={{ lolol, translatorByName, translatorById, randomChamp }}>
     const grade = {
         Good: "Good",
         Bad: "Bad",
@@ -87,14 +85,12 @@ console.log("last Random champion:", lastRandomChamp);
         console.log("reset event triggered");
         resetGame();
     });
-    const savedAnswers =
-        JSON.parse(localStorage.getItem("selectedChampions")) || [];
 
-    // User has not played the game yet
-    if (lastRandomChamp && savedAnswers[savedAnswers.length - 1] !== lastRandomChamp.id){
-        const event = new CustomEvent("reset");
-        window.dispatchEvent(event);
-    }
+
+
+    const savedAnswers =
+        JSON.parse(localStorage.getItem("selectedChampionsClassic")) || [];
+
     // User has already played the game
     if (savedAnswers[savedAnswers.length - 1] === randomChamp.id) {
         window.dispatchEvent(gameOverEvent);
