@@ -17,7 +17,6 @@ const champions = await championFetcher.parse();
 
 <Layout title="Classic Boldle">
     <MainContainer>
-        <LanguageDropdown />
         <ChampSelect champions={champions} mode="Classic"/>
         <ClassicGuess champions={champions}/>
         <Reset />
