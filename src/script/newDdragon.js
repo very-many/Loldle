@@ -4,7 +4,7 @@ import path from "path"; // for cross-platform compatibility
 
 import { translatorByName, translatorById } from "./translator.js";
 
-const dataDir = path.resolve("src", "data");
+const dataDir = path.resolve("data");
 const jsonFilePath = path.join(dataDir, "data.json");
 
 // Memory cache (for 24 hours)
