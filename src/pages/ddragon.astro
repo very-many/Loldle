@@ -1,5 +1,4 @@
 ---
-import Layout from "../layouts/Layout.astro";
 import { Champions } from "../script/newDdragon.js"; //Classic mode
 
 // 📦 Server-side: Fetch and prepare champions
@@ -16,7 +15,7 @@ let champions = await championFetcher.parse();
         <h1>League of Legends Champions</h1>
         <ul>
             {
-                Object.values(champions).map((champ) => (
+                Object.values(champions.data).map((champ) => (
                     <li>
                         <img src={`https://ddragon.leagueoflegends.com/cdn/${championFetcher.version}/img/champion/${champ.id}.png`} alt={champ.name} width="50" height="50" />
                         <strong>{champ.name}</strong> ({champ.releaseDate}) -
