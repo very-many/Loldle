@@ -628,14 +628,13 @@ export class Champions {
         return mappedData;
     }
 
-    //TODO: Make Array
-    getAttackType(champion) { 
+    getAttackType(champion) {
         const mixedChampions = ["Nidalee", "Jayce", "Elise"];
         if (mixedChampions.includes(champion.id)) {
-            return "Mixed"; 
+            return "Mixed";
         }
 
         const attackRange = champion.stats.attackrange;
-        return attackRange < 350 ? "Melee" : "Ranged";
+        return attackRange < 350 ? "Close" : "Range";
     }
 }
