@@ -180,12 +180,12 @@ async function fetchLanes() {
                             championLanes.push(detectedLane);
                         }
                     } */
-                    if (["1", "2"].includes(dataSortValue)) {
-                        const detectedLane = columnLaneMap[index];
-                        if (detectedLane) {
-                            championLanes.push(detectedLane);
+                        if (["1", "2"].includes(dataSortValue)) {
+                            const detectedLane = columnLaneMap[index];
+                            if (detectedLane) {
+                                championLanes.push(detectedLane);
+                            }
                         }
-                    }
                 });
 
                 lanes[championName] = championLanes;
@@ -578,9 +578,7 @@ export class Champions {
         ]);
 
         console.log(
-            `Fetched data in ${((new Date() - stopWatch) / 1000).toFixed(
-                2
-            )} seconds`
+            `Fetched data in ${(((new Date() - stopWatch)) / 1000).toFixed(2)} seconds`
         );
 
         const mappedData = {};
@@ -596,9 +594,7 @@ export class Champions {
         );
 
         console.log(
-            `Fetched genders in ${((new Date() - stopWatch) / 1000).toFixed(
-                2
-            )} seconds`
+            `Fetched genders in ${(((new Date() - stopWatch)) / 1000).toFixed(2)} seconds`
         );
 
         genders.forEach(({ champion, gender }) => {
@@ -607,14 +603,12 @@ export class Champions {
             const region = regions[champion.id] || "Runeterra";
             const releaseDate = releaseDates[champion.id] || "unknown";
 
+
             mappedData[champion.id] = {
                 id: champion.id,
                 name: champion.name,
                 lane: lane,
-                species:
-                    species == "unknown" && champion.id == "Ambessa"
-                        ? ["Human"]
-                        : species,
+                species: species == "unknown" && champion.id == "Ambessa" ? ["Human"] : species,
                 resource: champion.partype == "" ? "None" : champion.partype,
                 gender: gender,
                 attackType: this.getAttackType(champion),
@@ -628,19 +622,17 @@ export class Champions {
         });
 
         console.log(
-            `Mapped data in ${((new Date() - stopWatch) / 1000).toFixed(
-                2
-            )} seconds`
+            `Mapped data in ${(((new Date() - stopWatch)) / 1000).toFixed(2)} seconds`
         );
 
         return mappedData;
     }
 
     //TODO: Make Array
-    getAttackType(champion) {
+    getAttackType(champion) { 
         const mixedChampions = ["Nidalee", "Jayce", "Elise"];
         if (mixedChampions.includes(champion.id)) {
-            return "Mixed";
+            return "Mixed"; 
         }
 
         const attackRange = champion.stats.attackrange;

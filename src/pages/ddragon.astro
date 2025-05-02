@@ -1,7 +1,6 @@
 ---
 import { Champions } from "../script/newDdragon.js"; //Classic mode
-import Layout from "../layouts/Layout.astro";
-import MainContainer from "../components/mainContainer.astro";
+
 // 📦 Server-side: Fetch and prepare champions
 const championFetcher = new Champions("15.8.1");
 let champions = await championFetcher.parse();
