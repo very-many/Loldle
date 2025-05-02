@@ -1,8 +1,64 @@
-import * as cheerio from "cheerio";
-import fs from "fs";
-import path from "path"; // for cross-platform compatibility
+import * as cheerio from 'cheerio';
+import fs from 'fs';
+import path from 'path';
+import { c as createComponent, m as maybeRenderHead, g as renderSlot, a as renderTemplate } from './astro/server_T7v3i2NQ.mjs';
+import 'kleur/colors';
+import 'clsx';
 
-import { translatorByName, translatorById } from "./translator.js";
+let championJson = {};
+//let language = localStorage.getItem("lang") || "en_US";
+let language = "en_US";
+
+async function getLatestChampionDDragon() {
+    if (championJson[language]) return championJson[language];
+
+    let response;
+    let versionIndex = 0;
+    do {
+        // I loop over versions because 9.22.1 is broken
+        const version = (
+            await fetch(
+                "http://ddragon.leagueoflegends.com/api/versions.json"
+            ).then(async (r) => await r.json())
+        )[versionIndex++];
+
+
+        response = await fetch(
+            `https://ddragon.leagueoflegends.com/cdn/${version}/data/${language}/championFull.json`
+        );
+    } while (!response.ok);
+
+    championJson[language] = await response.json();
+    return championJson[language];
+}
+
+async function mapData() {
+    let data = await getLatestChampionDDragon();
+    data = data.data;
+
+    const translatorByName = {};
+    const translatorById = {};
+
+    for (const key in data) {
+        const champion = data[key];
+
+        // Map by name
+        translatorByName[champion.name] = {
+            key: champion.key,
+            id: champion.id,
+        };
+
+        // Map by id
+        translatorById[champion.id] = {
+            name: champion.name,
+            key: champion.key,
+        };
+    }
+
+    return { translatorByName, translatorById };
+}
+
+const { translatorByName, translatorById } = await mapData();
 
 const dataDir = path.resolve("src", "data");
 const jsonFilePath = path.join(dataDir, "data.json");
@@ -525,7 +581,7 @@ function checkCache() {
     return false;
 }
 // 💬 Champions class
-export class Champions {
+class Champions {
     constructor(version) {
         this.version = version;
     }
@@ -647,3 +703,9 @@ export class Champions {
         return attackRange < 350 ? "Melee" : "Ranged";
     }
 }
+
+const $$MainContainer = createComponent(($$result, $$props, $$slots) => {
+  return renderTemplate`${maybeRenderHead()}<div class="max-w-4xl mx-auto"> ${renderSlot($$result, $$slots["default"])} </div>`;
+}, "C:/Users/jonas/OneDrive - bwedu/Loldle/src/components/mainContainer.astro", void 0);
+
+export { $$MainContainer as $, Champions as C, translatorByName as a, translatorById as t };

@@ -1,23 +1,25 @@
 ---
 import { Champions } from "../script/newDdragon.js"; //Classic mode
-
+import Layout from "../layouts/Layout.astro";
+import MainContainer from "../components/mainContainer.astro";
 // 📦 Server-side: Fetch and prepare champions
 const championFetcher = new Champions("15.8.1");
 let champions = await championFetcher.parse();
 ---
 
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>League Champions</title>
-    </head>
-    <body>
+<Layout title="Ddragon Boldle">
+    <MainContainer>
         <h1>League of Legends Champions</h1>
         <ul>
             {
                 Object.values(champions.data).map((champ) => (
                     <li>
-                        <img src={`https://ddragon.leagueoflegends.com/cdn/${championFetcher.version}/img/champion/${champ.id}.png`} alt={champ.name} width="50" height="50" />
+                        <img
+                            src={`https://ddragon.leagueoflegends.com/cdn/${championFetcher.version}/img/champion/${champ.id}.png`}
+                            alt={champ.name}
+                            width="50"
+                            height="50"
+                        />
                         <strong>{champ.name}</strong> ({champ.releaseDate}) -
                         {champ.genre} - {champ.attackType} - {champ.gender} -
                         {champ.skinCount} skins - {champ.resource} -{" "}
@@ -26,5 +28,5 @@ let champions = await championFetcher.parse();
                 ))
             }
         </ul>
-    </body>
-</html>
+    </MainContainer>
+</Layout>
