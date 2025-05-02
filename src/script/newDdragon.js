@@ -1,12 +1,10 @@
 import * as cheerio from "cheerio";
 import fs from "fs";
 import path from "path"; // for cross-platform compatibility
-import os from "os";
-
 
 import { translatorByName, translatorById } from "./translator.js";
 
-const dataDir = os.tmpdir(); // Use the system's temporary directory
+const dataDir = path.resolve("src", "data");
 const jsonFilePath = path.join(dataDir, "data.json");
 
 // Memory cache (for 24 hours)
@@ -24,11 +22,13 @@ function writeCacheToFile() {
         fs.mkdirSync(dataDir, { recursive: true }); // Create the directory if it doesn't exist
     }
 
-    fs.writeFile(jsonFilePath, JSON.stringify(cache), (err) => {
+    // Write the file to /src/data/data.json
+    const filePath = path.join(dataDir, "data.json");
+    fs.writeFile(filePath, JSON.stringify(cache), (err) => {
         if (err) {
             console.error("Error writing file:", err);
         } else {
-            console.log(`File written successfully to ${jsonFilePath}`);
+            console.log(`File written successfully to ${filePath}`);
         }
     });
 }

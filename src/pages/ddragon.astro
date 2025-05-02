@@ -8,30 +8,25 @@ let champions = await championFetcher.parse();
 ---
 
 <Layout title="Ddragon Boldle">
-    <h1 style="text-align: center; color: #ECE2CF; font-size: 24px; font-family: Noto Sans; font-weight: 700; word-wrap: break-word">League of Legends Champions</h1>
-    <ul class="grid grid-cols-4 gap-4 mx-auto w-fit">    
-        {
-            Object.values(champions.data).map((champ) => (
-
-                <div style="flex-direction: column; justify-content: flex-start; align-items: center; display: inline-flex">
-                    <div
-                        style={`width: 308px; height: 560px; outline: 1px #8D783D solid; background-image: url(https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champ.id}_0.jpg); justify-content: center; align-items: center; gap: 10px; display: inline-flex`}
-                    >
-                        <div style="flex: 1 1 0; align-self: stretch; position: relative; background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, black 100%)">
-                            <div style="width: 308px; left: 0px; top: 436px; position: absolute; flex-direction: column; justify-content: center; align-items: center; gap: 4px; display: inline-flex">
-                                <div style="text-align: center; color: #ECE2CF; font-size: 24px; font-family: Noto Sans; font-weight: 700; word-wrap: break-word">
-                                    {champ.name}
-                                </div>
-                                <div style="justify-content: center; align-items: center; display: inline-flex">
-                                    <div style="opacity: 0.60; text-align: center; color: #F0E6D2; font-size: 12px; font-family: Noto Sans; font-weight: 400; word-wrap: break-word">
-                                        {champ.title}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            ))
-        }
-    </ul>
+    <MainContainer>
+        <h1>League of Legends Champions</h1>
+        <ul>
+            {
+                Object.values(champions.data).map((champ) => (
+                    <li>
+                        <img
+                            src={`https://ddragon.leagueoflegends.com/cdn/${championFetcher.version}/img/champion/${champ.id}.png`}
+                            alt={champ.name}
+                            width="50"
+                            height="50"
+                        />
+                        <strong>{champ.name}</strong> ({champ.releaseDate}) -
+                        {champ.genre} - {champ.attackType} - {champ.gender} -
+                        {champ.skinCount} skins - {champ.resource} -{" "}
+                        {champ.title} - {champ.lane} - {champ.region}
+                    </li>
+                ))
+            }
+        </ul>
+    </MainContainer>
 </Layout>
