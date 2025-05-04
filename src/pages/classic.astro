@@ -6,6 +6,7 @@ import LanguageDropdown from "../components/languageDropdown.astro";
 import ClassicGuess from "../components/classicGuess.astro";
 import Reset from "../components/reset.astro";
 import MainContainer from "../components/mainContainer.astro";
+import Tip from "../components/tip.astro";
 
 export const prerender = false; // Disable prerendering for this page
 
@@ -17,6 +18,7 @@ const champions = await championFetcher.parse();
 
 <Layout title="Classic Boldle">
     <MainContainer>
+        <Tip type="Title" hint={champions.answer.title} />
         <ChampSelect champions={champions} mode="Classic"/>
         <ClassicGuess champions={champions}/>
         <Reset />

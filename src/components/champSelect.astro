@@ -12,12 +12,13 @@ const resetTime = champions.expiration;
 ---
 
 <form autocomplete="off">
-    <div class="autocomplete" style="width:300px;">
+    <div class="autocomplete relative inline-block" style="width:300px;">
         <input
             id="myInput"
             type="text"
             name="Champion"
             placeholder="Champion Name"
+            class="bg-gray-800 text-gray-300 border border-gray-600 rounded-lg p-2 w-full"
         />
     </div>
 </form>
@@ -25,7 +26,7 @@ const resetTime = champions.expiration;
 <!-- <script src="/src/script/ddragon.js"></script> -->
 <script src="/src/script/languageDropdown.js"></script>
 
-<style>
+<!-- <style>
     * {
         box-sizing: border-box;
     }
@@ -77,14 +78,16 @@ const resetTime = champions.expiration;
         background-color: DodgerBlue !important;
         color: #ffffff;
     }
-</style>
+</style> -->
 
-<script define:vars={{ lolol, translatorByName, translatorById, mode, resetTime }}>
+<script
+    define:vars={{ lolol, translatorByName, translatorById, mode, resetTime }}
+>
     let champions = Object.keys(lolol).map((champion) => {
         return lolol[champion].name;
     });
     let gameOver = false;
-    
+
     if (localStorage.getItem("resetTime") == null) {
         localStorage.setItem("resetTime", resetTime);
     } else if (localStorage.getItem("resetTime") != resetTime) {
@@ -139,16 +142,24 @@ const resetTime = champions.expiration;
             a.classList.add(
                 "bg-gray-800",
                 "rounded-lg",
-                "w-full",
-                "z-10",
+                "z-99",
                 "max-h-96",
                 "overflow-y-auto",
                 "absolute",
-                "top-10",
+                "top-[100%]",
                 "left-0",
                 "right-0",
                 "text-gray-300"
             );
+            /* position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+
+        top: 100%;
+        left: 0;
+        right: 0; */
             /*append the DIV element as a child of the autocomplete container:*/
             this.parentNode.appendChild(a);
             /*for each item in the array...*/
@@ -156,17 +167,23 @@ const resetTime = champions.expiration;
                 /*check if the item starts with the same letters as the text field value:*/
                 const normalizedVal = val.toUpperCase();
                 const normalizedItem = arr[i].toUpperCase();
-                const overlyNormalizedItem = arr[i].toUpperCase().replace("'", "");
+                const overlyNormalizedItem = arr[i]
+                    .toUpperCase()
+                    .replace("'", "");
                 const hasSpace = arr[i].indexOf(" ") > -1;
-                const matchesStart = normalizedItem.startsWith(normalizedVal) ? true : overlyNormalizedItem.startsWith(normalizedVal);
-                const matchesAfterSpace = hasSpace
+
+                const matchesStart = normalizedItem.startsWith(normalizedVal)
+                    ? true
+                    : overlyNormalizedItem.startsWith(normalizedVal);
+                const matchesAfterAnySpace = hasSpace
                     ? arr[i]
-                          .slice(arr[i].indexOf(" ") + 1)
-                          .toUpperCase()
-                          .startsWith(normalizedVal)
+                          .split(" ") // Split the string into an array of words
+                          .some((word) =>
+                              word.toUpperCase().startsWith(normalizedVal)
+                          ) // Check if any word starts with the value
                     : false;
 
-                if (matchesStart || matchesAfterSpace) {
+                if (matchesStart || matchesAfterAnySpace) {
                     /*create a DIV element for each matching element:*/
                     b = document.createElement("DIV");
                     b.classList.add(
@@ -174,12 +191,13 @@ const resetTime = champions.expiration;
                         "items-center",
                         "p-2",
                         "hover:bg-gray-700",
-                        "focus:bg-gray-700"
+                        "focus:bg-gray-700",
+                        "cursor-pointer"
                     );
                     b.innerHTML = `<img class="mr-2" src="https://ddragon.leagueoflegends.com/cdn/${localStorage.getItem("version") || "15.8.1"}/img/champion/${translatorByName[arr[i]].id}.png" alt="X" width="40" height="40" />`;
                     /*make the matching letters bold:*/
                     /* If substring has ', make it bold too */
-                    let p = document.createElement("p")
+                    let p = document.createElement("p");
                     if (
                         arr[i].substr(0, val.length).indexOf("'") > -1 &&
                         val.indexOf("'") == -1
@@ -190,33 +208,36 @@ const resetTime = champions.expiration;
                             "</strong>";
                         p.innerHTML += arr[i].substr(val.length + 1);
                     } else if (
-                        arr[i].indexOf(" ") > -1
-                            ? arr[i]
-                                  .slice(arr[i].indexOf(" ") + 1)
-                                  .substr(0, val.length)
-                                  .toUpperCase() == val.toUpperCase()
-                            : false
+                        arr[i]
+                            .split(" ") // Split the string into an array of words
+                            .some((word) =>
+                                word.toUpperCase().startsWith(normalizedVal)
+                            )
                     ) {
-                        p.innerHTML += arr[i].substr(
-                            0,
-                            arr[i].indexOf(" ") + 1
-                        );
-                        p.innerHTML +=
-                            "<strong>" +
-                            arr[i].slice(
-                                arr[i].indexOf(" ") + 1,
-                                arr[i].indexOf(" ") + 1 + val.length
+                        const startIndex = arr[i]
+                            .toUpperCase()
+                            .indexOf(normalizedVal);
+                        if (startIndex !== -1) {
+                            // Add the part before the match
+                            p.innerHTML += arr[i].substr(0, startIndex);
+
+                            // Add the matched part with highlighting
+                            p.innerHTML +=
+                                "<strong>" +
+                                arr[i].substr(startIndex, val.length) +
+                                "</strong>";
+
+                            // Add the part after the match
+                            p.innerHTML += arr[i].substr(
+                                startIndex + val.length
                             );
-                        ("</strong>");
-                        p.innerHTML += arr[i].substr(
-                            arr[i].indexOf(" ") + 1 + val.length
-                        );
+                        }
                     } else {
                         p.innerHTML +=
                             "<strong>" +
                             arr[i].substr(0, val.length) +
                             "</strong>";
-                            p.innerHTML += arr[i].substr(val.length);
+                        p.innerHTML += arr[i].substr(val.length);
                     }
                     b.appendChild(p);
                     /*insert a input field that will hold the current array item's value:*/

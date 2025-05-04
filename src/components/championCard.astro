@@ -1,0 +1,39 @@
+---
+import "../styles/global.css";
+interface Props {
+    champion: any;
+}
+
+const { champion } = Astro.props;
+---
+
+<div class="inline-flex flex-col justify-start items-center">
+    <div
+        class=`w-[308px] h-[560px] outline-[1px] outline-[#8D783D] flex flex-col justify-center items-center gap-2 bg-center bg-size-[100%] transition-all duration-300 ease-in-out hover:bg-size-[120%]`
+        style=`background-image: url(https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champion.id}_0.jpg);`
+    >
+        <!--         <img src=`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champion.id}_0.jpg` alt="" class="w-[308px] h-[560px] object-cover absolute transition-all delay-150 duration-300 ease-in-out hover:size-[120%]" />
+ -->
+        <div
+            class="flex-1 self-stretch relative bg-gradient-to-b from-transparent to-black/100"
+        >
+            <div
+                class="w-[308px] left-0 top-[436px] absolute flex flex-col justify-center items-center gap-1"
+            >
+                <div
+                    class="text-center text-[#ECE2CF] text-[24px] font-NotoSans font-bold break-words"
+                >
+                    {champion.name}
+                </div>
+
+                <div class="flex justify-center items-center">
+                    <div
+                        class="opacity-60 text-center text-[#F0E6D2] text-[12px] font-NotoSans font-normal break-words"
+                    >
+                        {champion.title}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

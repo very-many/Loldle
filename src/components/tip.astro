@@ -1,0 +1,12 @@
+---
+interface Props {
+    type: string;
+    hint: any;
+}
+
+const { type, hint } = Astro.props;
+---
+
+<button class="bg-gray-800 text-white px-4 py-2 rounded">
+    <strong>{type}</strong> hint
+</button>
