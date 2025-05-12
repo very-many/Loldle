@@ -1,11 +1,38 @@
 import * as cheerio from "cheerio";
 import fs from "fs";
 import path from "path"; // for cross-platform compatibility
+//import fetch from "node-fetch";
 
 import { translatorByName, translatorById } from "./translator.js";
 
+const API_URL = "http://localhost:4321/api/submit"; 
+
+
+async function postToDatabase(data) {
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to post data: ${response.status}`);
+        }
+
+        console.log("Data successfully posted to the database.");
+    } catch (error) {
+        console.error("Error posting data to the database:", error);
+    }
+}
+
+
+/* ------------------------------------------------------ */
 const dataDir = path.resolve("public", "data");
 const jsonFilePath = path.join(dataDir, "data.json");
+
 
 // Memory cache (for 24 hours)
 let cache = {
@@ -17,12 +44,10 @@ let cache = {
 };
 
 function writeCacheToFile() {
-    // Ensure the dir exists
     if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true }); // Create the directory if it doesn't exist
+        fs.mkdirSync(dataDir, { recursive: true });
     }
 
-    // Write the file to /src/data/data.json
     const filePath = path.join(dataDir, "data.json");
     fs.writeFile(filePath, JSON.stringify(cache), (err) => {
         if (err) {
@@ -33,15 +58,14 @@ function writeCacheToFile() {
     });
 }
 
-// Calculate the time remaining until midnight
 function getTimeUntilMidnight() {
     const now = new Date();
     const midnight = new Date(
         now.getFullYear(),
         now.getMonth(),
         now.getDate() + 1
-    ); // Next midnight
-    return midnight.toISOString(); // Milliseconds until midnight
+    );
+    return midnight.toISOString();
 }
 
 function normalizeChampionName(name) {
@@ -58,7 +82,6 @@ function normalizeChampionName(name) {
     return name;
 }
 
-// Fetch release dates
 async function fetchReleaseDates() {
     const url = `https://corsproxy.io/?url=https://leagueoflegends.fandom.com/wiki/List_of_champions`;
 
@@ -80,7 +103,7 @@ async function fetchReleaseDates() {
                 .attr("title")
                 .split("/")[0];
             if (championName) {
-                const championKey = translatorByName[championName]?.id; // Use the key from translatorByName
+                const championKey = translatorByName[championName]?.id;
                 const yearText = $(columns[2]).text().trim().slice(6, 10);
                 const year = parseInt(yearText);
                 if (championKey && !isNaN(year)) {
@@ -149,7 +172,7 @@ async function fetchLanes() {
         const html = await response.text();
         const $ = cheerio.load(html);
 
-        const table = $("table tbody").eq(1); // Select the second <tbody>
+        const table = $("table tbody").eq(1); 
         const columnLaneMap = {
             1: "Top",
             2: "Jungle",
@@ -216,7 +239,7 @@ async function fetchRegions() {
         "zaun",
     ];
 
-    const regionsData = {}; // Map to store champion-to-region mapping
+    const regionsData = {};
 
     for (const region of regions) {
         try {
@@ -235,7 +258,7 @@ async function fetchRegions() {
                 const championName =
                     translatorByName[normalizeChampionName(champion.name)].id;
                 if (!regionsData[championName]) {
-                    regionsData[championName] = []; // Initialize as an array
+                    regionsData[championName] = [];
                 }
                 regionsData[championName].push(data.faction.name);
             });
@@ -244,7 +267,7 @@ async function fetchRegions() {
         }
     }
 
-    return regionsData; // Return the mapping of champion names to regions
+    return regionsData;
 }
 
 async function fetchSpecies() {
@@ -371,7 +394,7 @@ async function fetchSpecies() {
         },
         Magical_Alteration: {
             name: "Magically Altered",
-            fields: [3, 3], //in wiki it's field  3
+            fields: [3, 3],
         },
         Chemical_Alteration: {
             name: "Chemically Altered",
@@ -379,12 +402,11 @@ async function fetchSpecies() {
         },
         Void_Touched: {
             name: "Void Touched",
-            fields: [0, 0], //in wiki it's field  0
+            fields: [0, 0],
         },
-    }; // List of species to scrape
+    };
 
-    const speciesData = {}; // Map to store champion-to-species mapping
-
+    const speciesData = {};
     for (const oneSpecies of Object.keys(species)) {
         try {
             const response = await fetch(
@@ -400,7 +422,7 @@ async function fetchSpecies() {
             const html = await response.text();
             const $ = cheerio.load(html);
 
-            // Select all <a> elements inside the gallery and extract their text
+
             const champions = [];
             for (
                 let i = species[oneSpecies].fields[0];
@@ -409,7 +431,7 @@ async function fetchSpecies() {
             ) {
                 $(`#gallery-${i} .wikia-gallery-item .lightbox-caption a`).each(
                     (_, element) => {
-                        const championName = $(element).text().trim(); // Extract the inner text
+                        const championName = $(element).text().trim();
                         if (!champions.includes(championName)) {
                             champions.push(championName);
                         }
@@ -423,13 +445,13 @@ async function fetchSpecies() {
                     champions.length +
                     " champions found"
             );
-            // Map each champion to the current species
+
             champions.forEach((champion) => {
                 try {
                     const championName =
                         translatorByName[normalizeChampionName(champion)].id;
                     if (!speciesData[championName]) {
-                        speciesData[championName] = []; // Initialize as an array
+                        speciesData[championName] = [];
                     }
                     if (
                         !speciesData[championName].includes(
@@ -438,7 +460,7 @@ async function fetchSpecies() {
                     ) {
                         speciesData[championName].push(
                             species[oneSpecies].name
-                        ); // Add the species to the array
+                        );
                     }
                 } catch (error) {
                     console.error(
@@ -463,7 +485,7 @@ async function fetchSpecies() {
         oneOrderedSpeciesData.sort();
     });
     console.log("Species data fetched successfully.");
-    return orderedSpeciesData; // Return the mapping of champions to species
+    return orderedSpeciesData;
 }
 
 async function concurrentMap(items, mapper, concurrency = 10) {
@@ -524,7 +546,6 @@ function checkCache() {
     console.log("Cache is empty and no valid file found.");
     return false;
 }
-// 💬 Champions class
 export class Champions {
     constructor(version) {
         this.version = version;
@@ -540,6 +561,39 @@ export class Champions {
     }
 
     async parse() {
+        const now = new Date();
+        if(false) //Check expiration time
+        {
+            //return database entries
+        }
+        const fileData = fs.readFileSync(jsonFilePath, "utf8");
+        const parsedCache = JSON.parse(fileData);
+        /* console.log("Fetching fresh...");
+
+        if (!this.championsData) {
+            await this.fetchData();
+        }
+
+        const mappedData = await this.mapData(this.championsData); */
+        const mappedData = parsedCache.data
+        
+        cache = {
+            data: mappedData,
+            answer: mappedData[
+                Object.keys(mappedData)[
+                    Math.floor(Math.random() * Object.keys(mappedData).length)
+                ]
+            ],
+            lastAnswer: cache.lastAnswer,
+            timestamp: now.toISOString(),
+            expiration: getTimeUntilMidnight(),
+        };
+        //postToDatabase(cache);
+
+        return cache;
+    }
+
+    /* async parse() {
         const now = new Date();
         if (checkCache()) {
             return cache;
@@ -561,12 +615,12 @@ export class Champions {
             ],
             lastAnswer: cache.lastAnswer,
             timestamp: now.toISOString(),
-            expiration: getTimeUntilMidnight(), // Set expiration to midnight
+            expiration: getTimeUntilMidnight(),
         };
         writeCacheToFile();
         console.log(cache.answer);
         return cache;
-    }
+    } */
 
     async mapData(champions) {
         let stopWatch = new Date();
@@ -598,9 +652,9 @@ export class Champions {
         );
 
         genders.forEach(({ champion, gender }) => {
-            const lane = lanes[champion.id] || "unknown";
+            const lane = lanes[champion.id] || ["unknown"];
             const species = speciesList[champion.id] || ["unknown"];
-            const region = regions[champion.id] || "Runeterra";
+            const region = regions[champion.id] || ["Runeterra"];
             const releaseDate = releaseDates[champion.id] || "unknown";
 
 
@@ -628,7 +682,6 @@ export class Champions {
         return mappedData;
     }
 
-    //TODO: Make Array
     getAttackType(champion) { 
         const mixedChampions = ["Nidalee", "Jayce", "Elise"];
         if (mixedChampions.includes(champion.id)) {

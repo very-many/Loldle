@@ -10,7 +10,7 @@ const { champion } = Astro.props;
 <div class="inline-flex flex-col justify-start items-center">
     <div
         class=`w-[308px] h-[560px] outline-[1px] outline-[#8D783D] flex flex-col justify-center items-center gap-2 bg-center bg-size-[100%] transition-all duration-300 ease-in-out hover:bg-size-[120%]`
-        style=`background-image: url(https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champion.id}_0.jpg);`
+        style=`background-image: url(https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champion.id === "Fiddlesticks" ? "FiddleSticks" : champion.id}_0.jpg);`
     >
         <!--         <img src=`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champion.id}_0.jpg` alt="" class="w-[308px] h-[560px] object-cover absolute transition-all delay-150 duration-300 ease-in-out hover:size-[120%]" />
  -->
