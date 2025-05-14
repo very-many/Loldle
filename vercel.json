@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/submit.ts",
+      "path": "/api/cron.ts",
       "schedule": "0 0 * * *"
     }
   ]
