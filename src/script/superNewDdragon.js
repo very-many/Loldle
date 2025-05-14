@@ -1,90 +1,10 @@
 import * as cheerio from "cheerio";
-import fs from "fs";
-import path from "path"; // for cross-platform compatibility
-//import fetch from "node-fetch";
 
 import { translatorByName, translatorById } from "./translator.js";
 
-const API_URL = "http://localhost:4321/api/submit";
+let cache = {};
 
-async function postToDatabase(data) {
-    try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-            throw new Error(`Failed to post data: ${response.status}`);
-        }
-
-        console.log("Data successfully posted to the database.");
-    } catch (error) {
-        console.error("Error posting data to the database:", error);
-    }
-}
-
-//get from databse
-async function getFromDatabase() {
-    try {
-        const response = await fetch(API_URL, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        if (!response.ok) {
-            throw new Error(`Failed to get data: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log("Data successfully fetched from the database.");
-        return data;
-    }
-    catch (error) {
-        console.error("Error fetching data from the database:", error);
-    }
-}
-
-/* ------------------------------------------------------ */
-const dataDir = path.resolve("public", "data");
-const jsonFilePath = path.join(dataDir, "data.json");
-
-// Memory cache (for 24 hours)
-let cache = {
-    data: null,
-    answer: null,
-    lastAnswer: null,
-    timestamp: 0,
-    expiration: 0,
-};
-
-function writeCacheToFile() {
-    if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
-    }
-
-    const filePath = path.join(dataDir, "data.json");
-    fs.writeFile(filePath, JSON.stringify(cache), (err) => {
-        if (err) {
-            console.error("Error writing file:", err);
-        } else {
-            console.log(`File written successfully to ${filePath}`);
-        }
-    });
-}
-
-function getTimeUntilMidnight() {
-    const now = new Date();
-    const midnight = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1
-    );
-    return midnight.toISOString();
-}
+/* HELPERS */
 
 function normalizeChampionName(name) {
     name = name.replace(`’`, `'`);
@@ -99,6 +19,28 @@ function normalizeChampionName(name) {
     }
     return name;
 }
+
+async function concurrentMap(items, mapper, concurrency = 10) {
+    const results = [];
+    const executing = [];
+
+    for (const item of items) {
+        const p = Promise.resolve().then(() => mapper(item));
+        results.push(p);
+
+        if (concurrency <= items.length) {
+            const e = p.then(() => executing.splice(executing.indexOf(e), 1));
+            executing.push(e);
+            if (executing.length >= concurrency) {
+                await Promise.race(executing);
+            }
+        }
+    }
+
+    return Promise.all(results);
+}
+
+/* FETCHERS */
 
 async function fetchReleaseDates() {
     const url = `https://corsproxy.io/?url=https://leagueoflegends.fandom.com/wiki/List_of_champions`;
@@ -505,229 +447,112 @@ async function fetchSpecies() {
     return orderedSpeciesData;
 }
 
-async function concurrentMap(items, mapper, concurrency = 10) {
-    const results = [];
-    const executing = [];
 
-    for (const item of items) {
-        const p = Promise.resolve().then(() => mapper(item));
-        results.push(p);
+async function fetchData() {
+    let response;
+    let version;
+    let versionIndex = 0;
+    do {
+        // I loop over versions because sometimes the latest version is broken
+        version = (
+            await fetch(
+                "http://ddragon.leagueoflegends.com/api/versions.json"
+            ).then(async (r) => await r.json())
+        )[versionIndex++];
 
-        if (concurrency <= items.length) {
-            const e = p.then(() => executing.splice(executing.indexOf(e), 1));
-            executing.push(e);
-            if (executing.length >= concurrency) {
-                await Promise.race(executing);
-            }
-        }
-    }
+        response = await fetch(
+            `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/championFull.json`
+        );
+        console.log(
+            `Fetching data from version ${version}...` + response.status
+        );
+    } while (!response.ok);
 
-    return Promise.all(results);
+    const data = await response.json();
+    return data.data;
 }
 
-function checkCache() {
-    const now = new Date().toISOString();
-    if (cache.data && now < cache.expiration) {
-        console.log("Serving from cache...");
-        return true;
+/* DATA HELPERS */
+
+function getAttackType(champion) {
+    const mixedChampions = ["Nidalee", "Jayce", "Elise"];
+    if (mixedChampions.includes(champion.id)) {
+        return "Mixed";
     }
-    if (cache.data && now > cache.expiration) {
-        console.log("Cache expired");
-        cache.lastAnswer = cache.answer;
-        return false;
-    }
-    if (!cache.data && jsonFilePath) {
-        try {
-            const fileData = fs.readFileSync(jsonFilePath, "utf8");
-            const parsedCache = JSON.parse(fileData);
-            if (parsedCache.data && now < parsedCache.expiration) {
-                cache = parsedCache;
-                console.log("Cache loaded from file and is valid.");
-                return true;
-            } else {
-                if (!parsedCache.data) {
-                    console.log(parsedCache.data);
-                    console.log("Cache loaded from file but is invalid.");
-                    return false;
-                }
-                console.log(now + " " + parsedCache.expiration);
-                console.log("Cache loaded from file but is expired.");
-                cache.lastAnswer = parsedCache.answer;
-                return false;
-            }
-        } catch (err) {
-            console.error("Error reading cache file: (ig no such file or dir)");
-            return false;
-        }
-    }
-    console.log("Cache is empty and no valid file found.");
-    return false;
+
+    const attackRange = champion.stats.attackrange;
+    return attackRange < 350 ? "Melee" : "Ranged";
 }
-export class Champions {
-    constructor() {
-        this.version = null;
-    }
 
-    async fetchData() {
-        let response;
-        let versionIndex = 0;
-        do {
-            // I loop over versions because 9.22.1 is broken
-            this.version = (
-                await fetch(
-                    "http://ddragon.leagueoflegends.com/api/versions.json"
-                ).then(async (r) => await r.json())
-            )[versionIndex++];
+async function mapData(champions) {
+    let stopWatch = new Date();
+    const [releaseDates, lanes, regions, speciesList] = await Promise.all([
+        fetchReleaseDates(),
+        fetchLanes(),
+        fetchRegions(),
+        fetchSpecies(),
+    ]);
 
-            response = await fetch(
-                `https://ddragon.leagueoflegends.com/cdn/${this.version}/data/en_US/championFull.json`
-            );
-            console.log(
-                `Fetching data from version ${this.version}...` + response.status
-            );
-        } while (!response.ok);
+    console.log(
+        `Fetched data in ${((new Date() - stopWatch) / 1000).toFixed(
+            2
+        )} seconds`
+    );
 
-        const data = await response.json();
-        this.championsData = data.data;
-    }
+    const mappedData = {};
+    const championArray = Object.values(champions);
+    console.log(championArray);
 
-    async parse() {
-        const now = new Date();
-        if (false) {
-            //Check expiration time
-            //return database entries
-        }
-        const fileData = fs.readFileSync(jsonFilePath, "utf8");
-        const parsedCache = JSON.parse(fileData);
-        console.log("Fetching fresh...");
+    const genders = await concurrentMap(
+        championArray,
+        async (champion) => ({
+            champion,
+            gender: await fetchGender(champion.id),
+        }),
+        10
+    );
 
-        if (!this.championsData) {
-            await this.fetchData();
-        }
+    console.log(
+        `Fetched genders in ${((new Date() - stopWatch) / 1000).toFixed(
+            2
+        )} seconds`
+    );
 
-        const mappedData = await this.mapData(this.championsData);
-        /* const mappedData = parsedCache.data; */
+    genders.forEach(({ champion, gender }) => {
+        const lane = lanes[champion.id] || ["unknown"];
+        const species = speciesList[champion.id] || ["unknown"];
+        const region = regions[champion.id] || ["Runeterra"];
+        const releaseDate = releaseDates[champion.id] || "unknown";
 
-        cache = {
-            data: mappedData,
-            answer: mappedData[
-                Object.keys(mappedData)[
-                    Math.floor(Math.random() * Object.keys(mappedData).length)
-                ]
-            ],
-            lastAnswer: cache.lastAnswer,
-            timestamp: now.toISOString(),
-            expiration: getTimeUntilMidnight(),
+        mappedData[champion.id] = {
+            id: champion.id,
+            name: champion.name,
+            lane: lane,
+            species:
+                species == "unknown" && champion.id == "Ambessa"
+                    ? ["Human"]
+                    : species,
+            resource: champion.partype == "" ? "None" : champion.partype,
+            gender: gender,
+            attackType: getAttackType(champion),
+            region: region,
+            releaseDate: releaseDate,
+
+            genre: champion.tags,
+            title: champion.title,
+            skinCount: champion.skins.length,
         };
-        //postToDatabase(cache);
+    });
 
-        return cache;
-    }
+    console.log(
+        `Mapped data in ${((new Date() - stopWatch) / 1000).toFixed(2)} seconds`
+    );
 
-    /* async parse() {
-        const now = new Date();
-        if (checkCache()) {
-            return cache;
-        }
-        console.log("Fetching fresh...");
+    return mappedData;
+}
 
-        if (!this.championsData) {
-            await this.fetchData();
-        }
+/* EXPORTS */
 
-        const mappedData = await this.mapData(this.championsData);
-
-        cache = {
-            data: mappedData,
-            answer: mappedData[
-                Object.keys(mappedData)[
-                    Math.floor(Math.random() * Object.keys(mappedData).length)
-                ]
-            ],
-            lastAnswer: cache.lastAnswer,
-            timestamp: now.toISOString(),
-            expiration: getTimeUntilMidnight(),
-        };
-        writeCacheToFile();
-        console.log(cache.answer);
-        return cache;
-    } */
-
-    async mapData(champions) {
-        let stopWatch = new Date();
-        const [releaseDates, lanes, regions, speciesList] = await Promise.all([
-            fetchReleaseDates(),
-            fetchLanes(),
-            fetchRegions(),
-            fetchSpecies(),
-        ]);
-
-        console.log(
-            `Fetched data in ${((new Date() - stopWatch) / 1000).toFixed(
-                2
-            )} seconds`
-        );
-
-        const mappedData = {};
-        const championArray = Object.values(champions);
-
-        const genders = await concurrentMap(
-            championArray,
-            async (champion) => ({
-                champion,
-                gender: await fetchGender(champion.id),
-            }),
-            10
-        );
-
-        console.log(
-            `Fetched genders in ${((new Date() - stopWatch) / 1000).toFixed(
-                2
-            )} seconds`
-        );
-
-        genders.forEach(({ champion, gender }) => {
-            const lane = lanes[champion.id] || ["unknown"];
-            const species = speciesList[champion.id] || ["unknown"];
-            const region = regions[champion.id] || ["Runeterra"];
-            const releaseDate = releaseDates[champion.id] || "unknown";
-
-            mappedData[champion.id] = {
-                id: champion.id,
-                name: champion.name,
-                lane: lane,
-                species:
-                    species == "unknown" && champion.id == "Ambessa"
-                        ? ["Human"]
-                        : species,
-                resource: champion.partype == "" ? "None" : champion.partype,
-                gender: gender,
-                attackType: this.getAttackType(champion),
-                region: region,
-                releaseDate: releaseDate,
-
-                genre: champion.tags,
-                title: champion.title,
-                skinCount: champion.skins.length,
-            };
-        });
-
-        console.log(
-            `Mapped data in ${((new Date() - stopWatch) / 1000).toFixed(
-                2
-            )} seconds`
-        );
-
-        return mappedData;
-    }
-
-    getAttackType(champion) {
-        const mixedChampions = ["Nidalee", "Jayce", "Elise"];
-        if (mixedChampions.includes(champion.id)) {
-            return "Mixed";
-        }
-
-        const attackRange = champion.stats.attackrange;
-        return attackRange < 350 ? "Melee" : "Ranged";
-    }
+export async function parse() {
+    return await mapData(await fetchData());
 }

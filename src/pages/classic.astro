@@ -8,17 +8,54 @@ import Reset from "../components/reset.astro";
 import MainContainer from "../components/mainContainer.astro";
 import Tip from "../components/tip.astro";
 
+import { parse } from "../script/superNewDdragon.js";
+
 export const prerender = false; // Disable prerendering for this page
 
 // 📦 Server-side: Fetch and prepare champions
-const championFetcher = new Champions("15.8.1");
-const champions = await championFetcher.parse();
+//const championFetcher = new Champions("15.8.1");
+//const champions = await championFetcher.parse();
+/* const API_URL = "http://localhost:4321/api/request";
+
+async function getFromDatabase() {
+    try {
+        const response = await fetch(API_URL, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to get data: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log("Data successfully fetched from the database.");
+        return data;
+    }
+    catch (error) {
+        console.error("Error fetching data from the database:", error);
+    }
+}
+
+let champions = await getFromDatabase();
+//make object.keys to champions[i].id
+const championsObj = {};
+for (let i = 0; i < champions.length; i++) {
+    championsObj[champions[i].id] = champions[i];
+}
+const championsArray = Object.keys(championsObj).map((key) => championsObj[key]);
+champions = championsArray;
+console.log(champions); */
+
+/* const champions = await parse();
+console.log(champions); */
+
 ---
 
 
 <Layout title="Classic Boldle">
     <MainContainer>
-        <Tip type="Title" hint={champions.answer.title} />
+        <!-- <Tip type="Title" hint={champions.answer.title} /> -->
         <ChampSelect champions={champions} mode="Classic"/>
         <ClassicGuess champions={champions}/>
         <Reset />
