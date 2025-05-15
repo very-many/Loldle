@@ -6,9 +6,9 @@ interface Props {
 }
 
 const { champions } = Astro.props;
-let lolol = champions.data;
+let lolol = champions;
 
-const randomChamp = champions.answer;
+const randomChamp = champions["Aatrox"];
 ---
 
 <ul class="my-8">
@@ -59,7 +59,6 @@ const randomChamp = champions.answer;
 </ul>
 
 <ul id="answerHolder" class="flex flex-col-reverse gap-4"></ul>
-<p class="text-white">LOL <strong>hol</strong></p>
 
 <script define:vars={{ lolol, translatorByName, translatorById, randomChamp }}>
     const grade = {
@@ -114,11 +113,11 @@ const randomChamp = champions.answer;
         answerHolder.appendChild(li);
 
         li.appendChild(printDiv(champ.gender, result.gender));
-        li.appendChild(printDiv(champ.lane, result.lane));
+        li.appendChild(printDiv(champ.lanes, result.lanes));
         li.appendChild(printDiv(champ.species, result.species));
         li.appendChild(printDiv(champ.resource, result.resource));
         li.appendChild(printDiv(champ.attackType, result.attackType));
-        li.appendChild(printDiv(champ.region, result.region));
+        li.appendChild(printDiv(champ.regions, result.regions));
         li.appendChild(printDiv(champ.releaseDate, result.releaseDate));
     }
 
@@ -158,14 +157,14 @@ const randomChamp = champions.answer;
         let result = {};
 
         result["gender"] = trueFalse(champ.gender, randomChamp.gender);
-        result["lane"] = trueFalseMeh(champ.lane, randomChamp.lane);
+        result["lanes"] = trueFalseMeh(champ.lanes, randomChamp.lanes);
         result["species"] = trueFalseMeh(champ.species, randomChamp.species);
         result["resource"] = trueFalse(champ.resource, randomChamp.resource);
         result["attackType"] = trueFalse(
             champ.attackType,
             randomChamp.attackType
         );
-        result["region"] = trueFalseMeh(champ.region, randomChamp.region);
+        result["regions"] = trueFalseMeh(champ.regions, randomChamp.regions);
         result["releaseDate"] = higherLower(
             champ.releaseDate,
             randomChamp.releaseDate

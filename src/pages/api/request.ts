@@ -17,14 +17,12 @@ let db: ReturnType<typeof drizzle>;
 // Initialize the database connection
 if (process.env.DATABASE_URL) {
     db = drizzle(process.env.DATABASE_URL);
-}
-else if (import.meta.env.DATABASE_URL) {
+} else if (import.meta.env.DATABASE_URL) {
     db = drizzle(import.meta.env.DATABASE_URL);
-}
-else {
+} else {
     console.error("DATABASE_URL is not defined in the environment variables.");
 }
-async function getAllChampions() {
+export async function getAllChampions() {
     try {
         // Query the champions table and join related tables
         const championsData = await db
@@ -45,11 +43,20 @@ async function getAllChampions() {
             .from(champions)
             .leftJoin(championLanes, eq(champions.id, championLanes.championId))
             .leftJoin(lanes, eq(championLanes.laneId, lanes.id))
-            .leftJoin(championSpecies, eq(champions.id, championSpecies.championId))
+            .leftJoin(
+                championSpecies,
+                eq(champions.id, championSpecies.championId)
+            )
             .leftJoin(species, eq(championSpecies.speciesId, species.id))
-            .leftJoin(championGenres, eq(champions.id, championGenres.championId))
+            .leftJoin(
+                championGenres,
+                eq(champions.id, championGenres.championId)
+            )
             .leftJoin(genres, eq(championGenres.genreId, genres.id))
-            .leftJoin(championRegions, eq(champions.id, championRegions.championId))
+            .leftJoin(
+                championRegions,
+                eq(champions.id, championRegions.championId)
+            )
             .leftJoin(regions, eq(championRegions.regionId, regions.id))
             .groupBy(
                 champions.id,
@@ -62,8 +69,12 @@ async function getAllChampions() {
                 champions.skinCount
             );
 
+        // Make championsData.id the key of keyedChampionsData
+        const keyedChampionsData = Object.fromEntries(
+            championsData.map((champion: any) => [champion.id, champion])
+        );
         // Return all champions
-        return championsData;
+        return keyedChampionsData;
     } catch (error) {
         console.error("Error fetching champions data:", error);
         throw new Error("Failed to fetch champions data");
@@ -99,3 +110,4 @@ export const GET: APIRoute = async ({ params, request }) => {
         );
     }
 };
+

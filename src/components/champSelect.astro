@@ -7,7 +7,7 @@ interface Props {
 }
 
 const { champions, mode } = Astro.props;
-let lolol = champions.data;
+let lolol = champions;
 const resetTime = champions.expiration;
 ---
 
@@ -88,13 +88,13 @@ const resetTime = champions.expiration;
     });
     let gameOver = false;
 
-    if (localStorage.getItem("resetTime") == null) {
+    /* if (localStorage.getItem("resetTime") == null) {
         localStorage.setItem("resetTime", resetTime);
     } else if (localStorage.getItem("resetTime") != resetTime) {
         const event = new CustomEvent("reset");
         window.dispatchEvent(event);
         localStorage.setItem("resetTime", resetTime);
-    }
+    } */
 
     const selectionList = [];
     const storedChampions =

@@ -1,14 +1,13 @@
 ---
-import { Champions } from "../script/newDdragon.js"; //Classic mode
 import ChampSelect from "../components/champSelect.astro";
 import Layout from "../layouts/Layout.astro";
-import LanguageDropdown from "../components/languageDropdown.astro";
 import ClassicGuess from "../components/classicGuess.astro";
 import Reset from "../components/reset.astro";
 import MainContainer from "../components/mainContainer.astro";
 import Tip from "../components/tip.astro";
 
 import { parse } from "../script/superNewDdragon.js";
+import { getAllChampions } from "../pages/api/request.ts";
 
 export const prerender = false; // Disable prerendering for this page
 
@@ -49,6 +48,8 @@ console.log(champions); */
 
 /* const champions = await parse();
 console.log(champions); */
+
+const champions = await getAllChampions();
 
 ---
 

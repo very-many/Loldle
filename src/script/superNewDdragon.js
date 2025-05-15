@@ -501,7 +501,6 @@ async function mapData(champions) {
 
     const mappedData = {};
     const championArray = Object.values(champions);
-    console.log(championArray);
 
     const genders = await concurrentMap(
         championArray,
