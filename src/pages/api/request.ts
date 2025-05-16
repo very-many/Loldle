@@ -35,6 +35,7 @@ export async function getAllChampions() {
                 attackType: champions.attackType,
                 releaseDate: champions.releaseDate,
                 skinCount: champions.skinCount,
+                active: champions.active,
                 lanes: sql`ARRAY_AGG(DISTINCT ${lanes.name})`.as("lanes"),
                 species: sql`ARRAY_AGG(DISTINCT ${species.name})`.as("species"),
                 genres: sql`ARRAY_AGG(DISTINCT ${genres.name})`.as("genres"),

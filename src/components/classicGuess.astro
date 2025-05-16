@@ -8,7 +8,9 @@ interface Props {
 const { champions } = Astro.props;
 let lolol = champions;
 
-const randomChamp = champions["Aatrox"];
+const randomChamp = Object.values(champions).filter(
+    (champion: any) => champion.active
+)[0];
 ---
 
 <ul class="my-8">
@@ -85,8 +87,6 @@ const randomChamp = champions["Aatrox"];
         resetGame();
     });
 
-
-
     const savedAnswers =
         JSON.parse(localStorage.getItem("selectedChampionsClassic")) || [];
 
@@ -94,7 +94,6 @@ const randomChamp = champions["Aatrox"];
     if (savedAnswers[savedAnswers.length - 1] === randomChamp.id) {
         window.dispatchEvent(gameOverEvent);
     }
-    
 
     savedAnswers.forEach((champ) => {
         addAnswer(lolol[champ]);

@@ -236,133 +236,133 @@ async function fetchSpecies() {
         //"Ascended",
         Brackern: {
             name: "Brackern",
-            fields: [2, 2],
+            maxFields: 1,
         },
         Celestial: {
             name: "Celestial",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Dragon: {
             name: "Dragon",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Golem: {
             name: "Golem",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Human: {
             name: "Human",
-            fields: [1, 7],
+            maxFields: 7,
         },
         Minotaur: {
             name: "Minotaur",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Spirit: {
             name: "Spirit",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Troll: {
             name: "Troll",
-            fields: [1, 1],
+            maxFields: 1,
         },
         //"Undead",
         Vastaya: {
             name: "Vastaya",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Voidborn: {
             name: "Voidborn",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Yeti: {
             name: "Yeti",
-            fields: [1, 1],
+            maxFields: 1,
         },
 
         //Lesser sapient species
         Cat: {
             name: "Cat",
-            fields: [1, 1],
+            maxFields: 1,
         },
         /* Dog: {
             //???
             name: "Dog",
-            fields: [1, 1],
+            maxFields: 1,
         }, */
         Rat: {
             name: "Rat",
-            fields: [1, 1],
+            maxFields: 1,
         },
 
         //Sapient sub species
         //Ascended
         Aspect_Host: {
             name: "Aspect",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Baccai: {
             name: "Baccai",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Darkin: {
             name: "Darkin",
-            fields: [1, 1],
+            maxFields: 1,
         },
         "God-Warrior": {
             name: "God-Warrior",
-            fields: [1, 1],
+            maxFields: 1,
         },
 
         //Spirit
         Demon: {
             name: "Demon",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Yordle: {
             name: "Yordle",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Spirit_God: {
             name: "God",
-            fields: [1, 1],
+            maxFields: 1,
         },
 
         //Undead
         Revenant: {
             name: "Revenant",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Wraith: {
             name: "Wraith",
-            fields: [1, 1],
+            maxFields: 1,
         },
 
         //Human addons
         /* https://leagueoflegends.fandom.com/wiki/Human#Show ----- Here are many listet, maybe kinda reduce fetches if already there */
         Magical: {
             name: "Magicborn",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Iceborn: {
             name: "Iceborn",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Cyborg: {
             name: "Cyborg",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Magical_Alteration: {
             name: "Magically Altered",
-            fields: [3, 3],
+            maxFields: 1,
         },
         Chemical_Alteration: {
             name: "Chemically Altered",
-            fields: [1, 1],
+            maxFields: 1,
         },
         Void_Touched: {
             name: "Void Touched",
-            fields: [0, 0],
+            maxFields: 1,
         },
     };
 
@@ -382,21 +382,22 @@ async function fetchSpecies() {
             const html = await response.text();
             const $ = cheerio.load(html);
 
+            // ...existing code...
             const champions = [];
-            for (
-                let i = species[oneSpecies].fields[0];
-                i <= species[oneSpecies].fields[1];
-                i++
-            ) {
-                $(`#gallery-${i} .wikia-gallery-item .lightbox-caption a`).each(
-                    (_, element) => {
+            const galleryDivs = $('[id^="gallery-"]').slice(0, species[oneSpecies].maxFields); // nur die ersten 7 Galerien
+
+            galleryDivs.each((_, gallery) => {
+                $(gallery)
+                    .find(".wikia-gallery-item .lightbox-caption a")
+                    .each((_, element) => {
                         const championName = $(element).text().trim();
                         if (!champions.includes(championName)) {
                             champions.push(championName);
                         }
-                    }
-                );
-            }
+                    });
+            });
+            // ...existing code...
+            // ...existing code...
 
             console.log(
                 species[oneSpecies].name +
@@ -446,7 +447,6 @@ async function fetchSpecies() {
     console.log("Species data fetched successfully.");
     return orderedSpeciesData;
 }
-
 
 async function fetchData() {
     let response;

@@ -1,4 +1,4 @@
-import { pgTable, text, integer, serial } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, serial, boolean } from "drizzle-orm/pg-core";
 
 // Define the champions table
 export const champions = pgTable("champions", {
@@ -10,6 +10,7 @@ export const champions = pgTable("champions", {
     attackType: text("attacktype"),
     releaseDate: integer("releasedate"),
     skinCount: integer("skincount"),
+    active: boolean("active").default(false),
 });
 
 // Define the lanes table

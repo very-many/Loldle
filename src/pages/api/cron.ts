@@ -80,6 +80,16 @@ export const GET: APIRoute = async ({ params, request }) => {
 
 async function POST (data:any) {
     try {
+        // Wipe all relevant tables (order matters due to foreign keys)
+        await db.delete(championLanes);
+        await db.delete(championSpecies);
+        await db.delete(championGenres);
+        await db.delete(championRegions);
+        await db.delete(champions);
+        await db.delete(lanes);
+        await db.delete(species);
+        await db.delete(genres);
+        await db.delete(regions);
         // Parse the incoming JSON data
         const championsData = data;
 
@@ -90,6 +100,10 @@ async function POST (data:any) {
             );
         }
 
+        // get random champion
+        const randomChampion = Object.keys(championsData)[
+            Math.floor(Math.random() * Object.keys(championsData).length)
+        ];
         // Iterate over the champions and insert or update them in the database
         for (const championId in championsData) {
             const champion = championsData[championId];
@@ -107,6 +121,7 @@ async function POST (data:any) {
                     attackType: champion.attackType,
                     releaseDate: champion.releaseDate,
                     skinCount: champion.skinCount,
+                    active: championId === randomChampion,
                 })
                 .onConflictDoUpdate({
                     target: champions.id,
@@ -118,6 +133,7 @@ async function POST (data:any) {
                         attackType: champion.attackType,
                         releaseDate: champion.releaseDate,
                         skinCount: champion.skinCount,
+                        active: championId === randomChampion,
                     },
                 });
 
