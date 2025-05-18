@@ -3,9 +3,9 @@ import ChampionCard from "../components/championCard.astro";
 import Layout from "../layouts/Layout.astro";
 import { Champions } from "../script/newDdragon.js"; //Classic mode
 
-// 📦 Server-side: Fetch and prepare champions
-const championFetcher = new Champions("15.8.1");
-let champions = await championFetcher.parse();
+import { getAllChampions } from "../pages/api/request.ts";
+export const prerender = false; // Disable prerendering for this page
+const champions = await getAllChampions();
 ---
 
 <Layout title="Ddragon">
@@ -17,7 +17,7 @@ let champions = await championFetcher.parse();
 
     <ul class="grid grid-cols-3 gap-4 mx-auto w-fit 2xl:grid-cols-4">
         {
-            Object.values(champions.data).map((champ) => (
+            Object.values(champions).map((champ) => (
                 <ChampionCard champion={champ} />
             ))
         }

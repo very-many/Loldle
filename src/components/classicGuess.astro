@@ -13,8 +13,8 @@ const randomChamp = Object.values(champions).filter(
 )[0];
 ---
 
-<ul class="my-8">
-    <!-- <li class="grid grid-rows-1 grid-cols-8 gap-1">
+<!-- <ul class="my-8">
+    <li class="grid grid-rows-1 grid-cols-8 gap-1">
 
         <div class="flex justify-center items-center aspect-square border-2">
             <img
@@ -57,10 +57,261 @@ const randomChamp = Object.values(champions).filter(
         >
             2012
         </div>
-    </li> -->
-</ul>
+    </li>
+</ul> -->
 
-<ul id="answerHolder" class="flex flex-col-reverse gap-4"></ul>
+<div
+    id="championHeader"
+    class="size- inline-flex justify-start items-center gap-2.5 flex-col mb-4 invisible"
+>
+    <div class="size- inline-flex justify-start items-start gap-2.5">
+        <div
+            class="w-32 h-12 px-2 py-2.5 border-b-4 border-neutral-200 inline-flex flex-col justify-center items-center gap-2.5 overflow-hidden"
+        >
+            <div
+                class="self-stretch text-center justify-start text-neutral-200 text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]"
+            >
+                Champion
+            </div>
+        </div>
+        <div
+            class="w-32 h-12 px-2 py-2.5 border-b-4 border-neutral-200 inline-flex flex-col justify-center items-center gap-2.5 overflow-hidden"
+        >
+            <div
+                class="self-stretch text-center justify-start text-neutral-200 text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]"
+            >
+                Gender
+            </div>
+        </div>
+        <div
+            class="w-32 h-12 px-2 py-2.5 border-b-4 border-neutral-200 inline-flex flex-col justify-center items-center gap-2.5 overflow-hidden"
+        >
+            <div
+                class="self-stretch text-center justify-start text-neutral-200 text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]"
+            >
+                Lane
+            </div>
+        </div>
+        <div
+            class="w-32 h-12 px-2 py-2.5 border-b-4 border-neutral-200 inline-flex flex-col justify-center items-center gap-2.5 overflow-hidden"
+        >
+            <div
+                class="self-stretch text-center justify-start text-neutral-200 text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]"
+            >
+                Species
+            </div>
+        </div>
+        <div
+            class="w-32 h-12 px-2 py-2.5 border-b-4 border-neutral-200 inline-flex flex-col justify-center items-center gap-2.5 overflow-hidden"
+        >
+            <div
+                class="self-stretch text-center justify-start text-neutral-200 text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]"
+            >
+                Resource
+            </div>
+        </div>
+        <div
+            class="w-32 h-12 px-2 py-2.5 border-b-4 border-neutral-200 inline-flex flex-col justify-center items-center gap-2.5 overflow-hidden"
+        >
+            <div
+                class="self-stretch text-center justify-start text-neutral-200 text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]"
+            >
+                Range type
+            </div>
+        </div>
+        <div
+            class="w-32 h-12 px-2 py-2.5 border-b-4 border-neutral-200 inline-flex flex-col justify-center items-center gap-2.5 overflow-hidden"
+        >
+            <div
+                class="self-stretch text-center justify-start text-neutral-200 text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]"
+            >
+                Region
+            </div>
+        </div>
+        <div
+            class="w-32 h-12 px-2 py-2.5 border-b-4 border-neutral-200 inline-flex flex-col justify-center items-center gap-2.5 overflow-hidden"
+        >
+            <div
+                class="self-stretch text-center justify-start text-neutral-200 text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]"
+            >
+                Release year
+            </div>
+        </div>
+    </div>
+</div>
+
+<div
+    id="answerHolder"
+    class="size- inline-flex justify-start items-center gap-4 flex-col-reverse"
+>
+    <!-- <div class="size- inline-flex justify-start items-start gap-2.5">
+        <div class="size-32">
+            <img
+                class="size-32 outline outline-black"
+                src="https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/Aatrox.png"
+            />
+        </div>
+        <div
+            class="size-32 bg-green-600 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black inline-flex flex-col justify-center items-center gap-2.5"
+        >
+            <div
+                class="self-stretch text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)]"
+            >
+                Male
+            </div>
+        </div>
+        <div
+            class="size-32 bg-yellow-600 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black inline-flex flex-col justify-center items-center gap-2.5"
+        >
+            <div
+                class="self-stretch text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)]"
+            >
+                Top
+            </div>
+        </div>
+        <div
+            class="size-32 bg-red-800 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black inline-flex flex-col justify-center items-center gap-2.5"
+        >
+            <div
+                class="self-stretch text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)]"
+            >
+                Darkin
+            </div>
+        </div>
+        <div
+            class="size-32 bg-red-800 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black inline-flex flex-col justify-center items-center gap-2.5"
+        >
+            <div
+                class="self-stretch text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)]"
+            >
+                Blood Well
+            </div>
+        </div>
+        <div
+            class="size-32 bg-green-600 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black inline-flex flex-col justify-center items-center gap-2.5"
+        >
+            <div
+                class="self-stretch text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)]"
+            >
+                Melee
+            </div>
+        </div>
+        <div
+            class="size-32 bg-green-600 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black inline-flex flex-col justify-center items-center gap-2.5"
+        >
+            <div
+                class="self-stretch text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)]"
+            >
+                Runeterra
+            </div>
+        </div>
+        <div
+            class="size-32 relative bg-red-800 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black flex justify-center items-center gap-2.5"
+        >
+            <div data-svg-wrapper class="absolute">
+                <svg
+                    width="100"
+                    height="100"
+                    viewBox="0 0 82 70"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M41 70L81.4145 0L0.585481 0L41 70ZM41 0L34 0V7H41H48V0L41 0Z"
+                        fill="black"
+                        fill-opacity="0.39"></path>
+                </svg>
+            </div>
+            <div
+                class="text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)] z-10"
+            >
+                2013
+            </div>
+        </div>
+    </div>
+    <div class="size- inline-flex justify-start items-start gap-2.5">
+        <div class="size-32">
+            <img
+                class="size-32 outline outline-black"
+                src="https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/Aatrox.png"
+            />
+        </div>
+        <div
+            class="size-32 bg-green-600 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black inline-flex flex-col justify-center items-center gap-2.5"
+        >
+            <div
+                class="self-stretch text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)]"
+            >
+                Male
+            </div>
+        </div>
+        <div
+            class="size-32 bg-yellow-600 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black inline-flex flex-col justify-center items-center gap-2.5"
+        >
+            <div
+                class="self-stretch text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)]"
+            >
+                Top
+            </div>
+        </div>
+        <div
+            class="size-32 bg-red-800 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black inline-flex flex-col justify-center items-center gap-2.5"
+        >
+            <div
+                class="self-stretch text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)]"
+            >
+                Darkin
+            </div>
+        </div>
+        <div
+            class="size-32 bg-red-800 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black inline-flex flex-col justify-center items-center gap-2.5"
+        >
+            <div
+                class="self-stretch text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)]"
+            >
+                Blood Well
+            </div>
+        </div>
+        <div
+            class="size-32 bg-green-600 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black inline-flex flex-col justify-center items-center gap-2.5"
+        >
+        </div>
+        <div
+            class="size-32 bg-green-600 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black inline-flex flex-col justify-center items-center gap-2.5"
+        >
+            <div
+                class="self-stretch text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)]"
+            >
+                Runeterra
+            </div>
+        </div>
+        <div
+            class="size-32 relative bg-red-800 shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)] outline outline-black flex justify-center items-center gap-2.5"
+        >
+            <div data-svg-wrapper class="absolute">
+                <svg
+                    width="100"
+                    height="100"
+                    viewBox="0 0 82 70"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M41 0L0.585481 70H81.4145L41 0ZM41 63H34L34 70H41H48L48 63H41Z"
+                        fill="black"
+                        fill-opacity="0.39"></path>
+                </svg>
+            </div>
+            <div
+                class="text-center justify-start text-white text-xl font-medium font-['Beaufort_for_LOL'] [text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)] z-10"
+            >
+                2013
+            </div>
+        </div>
+    </div> -->
+</div>
+
+
 
 <script define:vars={{ lolol, translatorByName, translatorById, randomChamp }}>
     const grade = {
@@ -72,7 +323,8 @@ const randomChamp = Object.values(champions).filter(
     };
 
     const answerHolder = document.getElementById("answerHolder");
-    const version = localStorage.getItem("version") || "15.8.1";
+    const championHeader = document.getElementById("championHeader");
+    const version = localStorage.getItem("version") || "15.10.1";
     const gameOverEvent = new CustomEvent("gameOver", {
         detail: { result: "win" },
     });
@@ -100,56 +352,88 @@ const randomChamp = Object.values(champions).filter(
     });
 
     function addAnswer(champ) {
+        championHeader.classList.remove("invisible");
         const result = checkAnswer(champ);
 
-        const li = document.createElement("li");
-        li.classList.add("grid", "grid-rows-1", "grid-cols-8", "gap-1");
+        const li = document.createElement("DIV");
+        li.classList.add(
+            "size-",
+            "inline-flex",
+            "justify-start",
+            "items-start",
+            "gap-2.5"
+        );
         li.innerHTML = `
-        <div class="flex justify-center items-center aspect-square">
-        <img src="https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champ.id}.png" alt="${champ.name}"/>
+        <div class="size-32">
+            <img class="size-32 outline outline-black" src="https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champ.id}.png" alt="${champ.name}" />
         </div>
         `;
         answerHolder.appendChild(li);
 
         li.appendChild(printDiv(champ.gender, result.gender));
-        li.appendChild(printDiv(champ.lanes, result.lanes));
-        li.appendChild(printDiv(champ.species, result.species));
+        li.appendChild(printDiv(champ.lanes.join(", "), result.lanes));
+        li.appendChild(printDiv(champ.species.join(", "), result.species));
         li.appendChild(printDiv(champ.resource, result.resource));
         li.appendChild(printDiv(champ.attackType, result.attackType));
-        li.appendChild(printDiv(champ.regions, result.regions));
+        li.appendChild(printDiv(champ.regions.join(", "), result.regions));
         li.appendChild(printDiv(champ.releaseDate, result.releaseDate));
     }
 
     function printDiv(content, res) {
-        let element = document.createElement("DIV");
-        element.classList.add(
-            "flex",
+        let tileContainer = document.createElement("DIV");
+        tileContainer.classList.add(
+            "size-32",
+            "shadow-[inset_0px_0px_7.199999809265137px_0px_rgba(0,0,0,1.00)]",
+            "outline",
+            "outline-black",
             "justify-center",
             "items-center",
-            "aspect-square",
-            "border-2"
+            "gap-2.5",
+            "inline-flex",
+            "flex-col"
+        );
+        let element = document.createElement("DIV");
+        element.classList.add(
+            "self-stretch",
+            "text-center",
+            "justify-start",
+            "text-white",
+            "text-xl",
+            "font-medium",
+            "font-['Beaufort_for_LOL']",
+            "[text-shadow:_0px_0px_11px_rgb(0_0_0_/_1.00)]",
+            "z-10"
         );
         element.innerHTML = content;
+
         if (res === grade.Good) {
-            element.classList.add("bg-green-500");
-        } else if (res === grade.Bad) {
-            element.classList.add("bg-red-500");
+            tileContainer.classList.add("bg-green-600");
+        } else if (
+            res === grade.Bad ||
+            res === grade.Higher ||
+            res === grade.Lower
+        ) {
+            tileContainer.classList.add("bg-red-800");
+            if (res === grade.Higher) {
+                tileContainer.innerHTML = `
+                <div data-svg-wrapper class="absolute">
+                    <svg width="100" height="100" viewBox="0 0 82 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M41 0L0.585481 70H81.4145L41 0ZM41 63H34L34 70H41H48L48 63H41Z" fill="black" fill-opacity="0.39"/>
+                    </svg>
+                </div>`;
+            } else if (res === grade.Lower) {
+                tileContainer.innerHTML = `
+                <div data-svg-wrapper class="absolute">
+                <svg width="100" height="100" viewBox="0 0 82 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M41 70L81.4145 0L0.585481 0L41 70ZM41 0L34 0V7H41H48V0L41 0Z" fill="black" fill-opacity="0.39" />
+                </svg>
+            </div>`;
+            }
         } else if (res === grade.Meh) {
-            element.classList.add("bg-yellow-500");
-        } else if (res === grade.Higher) {
-            element.classList.add(
-                "bg-gradient-to-b",
-                "from-green-500",
-                "to-red-500"
-            );
-        } else if (res === grade.Lower) {
-            element.classList.add(
-                "bg-gradient-to-b",
-                "from-red-500",
-                "to-green-500"
-            );
+            tileContainer.classList.add("bg-yellow-600");
         }
-        return element;
+        tileContainer.appendChild(element);
+        return tileContainer;
     }
 
     function checkAnswer(champ) {
@@ -184,6 +468,7 @@ const randomChamp = Object.values(champions).filter(
     }
 
     function resetGame() {
+        championHeader.classList.add("invisible");
         answerHolder.innerHTML = "";
     }
 </script>

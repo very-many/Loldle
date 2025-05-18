@@ -1,0 +1,55 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
+// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+---
+
+<Layout title="Boldle">
+    <div class="flex flex-col items-center min-h-[60vh] bg-gradient-to-b from-[#0a1428] via-[#1c2330] to-[#091428] py-16 relative overflow-hidden">
+        <!-- Decorative floating icons -->
+        <img src="/assets/poro.png" alt="Poro" class="absolute left-8 top-12 w-16 animate-bounce-slow opacity-80 pointer-events-none" />
+        <img src="/assets/teemo-shroom.png" alt="Teemo Shroom" class="absolute right-8 bottom-16 w-12 animate-float pointer-events-none" />
+        <img src="/assets/ward.png" alt="Ward" class="absolute left-1/2 -translate-x-1/2 top-4 w-10 animate-pulse pointer-events-none" />
+
+        <div class="flex flex-col gap-8 w-full max-w-md p-10 rounded-2xl shadow-2xl border-4 border-[#c89b3c] bg-[#091428]/90 z-10">
+            <img src="/assets/lol-logo.png" alt="League of Legends Logo" class="w-24 mx-auto mb-2 drop-shadow-xl" />
+            <h1 class="text-3xl font-extrabold text-[#f0e6d2] text-center tracking-wide mb-2 font-serif">Welcome to <span class="text-[#c89b3c]">Boldle</span>!</h1>
+            <p class="text-[#b6b6b6] text-center mb-4 font-medium">
+                Test your League of Legends knowledge in two unique game modes.<br />
+                <span class="text-[#c89b3c] font-bold">Classic</span> or <span class="text-[#0ac8b9] font-bold">Ddragon</span> — choose your challenge!
+            </p>
+            <div class="flex flex-col gap-4">
+                <a
+                    href="/classic"
+                    class="px-6 py-3 bg-[#c89b3c] text-[#0a1428] rounded-lg font-bold shadow-lg transition-all duration-200 transform hover:bg-[#f0e6d2] hover:-translate-y-1 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#c89b3c] text-center tracking-wide border-2 border-[#785a28]"
+                >
+                    Classic Mode
+                </a>
+                <a
+                    href="/ddragon"
+                    class="px-6 py-3 bg-[#005a82] text-[#f0e6d2] rounded-lg font-bold shadow-lg transition-all duration-200 transform hover:bg-[#0ac8b9] hover:-translate-y-1 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#005a82] text-center tracking-wide border-2 border-[#0ac8b9]"
+                >
+                    Ddragon Mode
+                </a>
+            </div>
+            <div class="flex justify-center gap-4 mt-6">
+                <img src="/assets/champion-annie.png" alt="Annie" class="w-10 h-10 rounded-full border-2 border-[#c89b3c] bg-[#1c2330]" />
+                <img src="/assets/champion-jinx.png" alt="Jinx" class="w-10 h-10 rounded-full border-2 border-[#0ac8b9] bg-[#1c2330]" />
+                <img src="/assets/champion-yasuo.png" alt="Yasuo" class="w-10 h-10 rounded-full border-2 border-[#c89b3c] bg-[#1c2330]" />
+            </div>
+        </div>
+        <style>
+            .animate-bounce-slow {
+                animation: bounce 2.5s infinite;
+            }
+            .animate-float {
+                animation: float 4s ease-in-out infinite;
+            }
+            @keyframes float {
+                0%, 100% { transform: translateY(0);}
+                50% { transform: translateY(-16px);}
+            }
+        </style>
+    </div>
+</Layout>

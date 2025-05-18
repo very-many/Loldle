@@ -1,4 +1,43 @@
-<button id="Reset" class="text-gray-300 cursor-pointer">Reset</button>
+---
+import LolButton from "./lolButton.astro"
+---
+<!-- <button
+    id="Reset"
+    class="w-24 h-8 relative inline-flex flex-col justify-center items-center group outline-none cursor-pointer my-8"
+>
+    <div class="w-full h-full absolute cursor-pointer">
+        <div
+            class="w-full h-full absolute bg-neutral-800/95 outline-4 outline-offset-[-2px] outline-black/60"
+        >
+        </div>
+        <div
+            class="w-full h-full absolute outline-2 outline-offset-[-1px] outline-orange-300 group-active:outline-yellow-950 transition-all duration-150"
+        >
+        </div>
+        <div
+            class="w-full h-full absolute opacity-0 group-hover:opacity-100 group-active:opacity-0 shadow-[0px_-2px_6px_0px_rgba(255,234,191,0.60)] outline-2 outline-offset-[-1px] outline-orange-300 transition-all duration-150"
+        >
+        </div>
+        <div
+            class="w-full h-full absolute opacity-0 group-active:opacity-100 outline-2 outline-offset-[-1px] outline-stone-900 transition-all duration-150"
+        >
+        </div>
+    </div>
+    <div
+        class="size- px-4 py-2 inline-flex justify-center items-center gap-1 relative z-10"
+    >
+        <div
+            class="text-center justify-start text-base font-bold font-['Beaufort_for_LOL'] leading-none text-stone-300 group-hover:text-orange-100 group-active:text-stone-600 transition-colors duration-150"
+        >
+            Reset
+        </div>
+    </div>
+</button> -->
+
+
+<LolButton type=1 id="Reset" text="Reset" />
+
+
 
 <script>
     const resetButton = document.getElementById("Reset");
@@ -8,3 +47,4 @@
         window.dispatchEvent(event);
     });
 </script>
+

@@ -6,6 +6,93 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Boldle">
-    <a href="/classic">Classic</a>
-    <a href="/ddragon">Ddragon</a>
+    <!-- There is no official League of Legends CSS, but we can mimic the style using custom CSS and assets from Riot's CDN. -->
+
+    <div
+        class="flex justify-center items-center min-h-screen league-bg relative overflow-hidden"
+    >
+        <div class="absolute inset-0 pointer-events-none z-0">
+            <div
+                class="w-full h-full border-8 border-[#c89b3c] rounded-3xl opacity-80"
+            >
+            </div>
+        </div>
+        <div
+            class="league-card w-full max-w-md p-10 rounded-2xl shadow-2xl border-4 border-[#785a28] bg-[#0a1428]/90 z-10 relative"
+        >
+            <!--             <img src="/assets/logo.png" alt="Logo" class="w-24 mx-auto mb-6 drop-shadow-xl" />
+ -->
+            <h1
+                class="text-3xl font-bold text-[#c8aa6e] text-center mb-2 tracking-widest"
+            >
+                Boldle
+            </h1>
+            <p class="text-center text-[#a09b8c] mb-8 text-lg font-medium">
+                Guess the League champion! Choose your mode:
+            </p>
+            <a
+                href="/classic"
+                class="league-btn league-btn-gold w-full mb-4 text-xl font-bold tracking-wide uppercase shadow-lg transition-transform hover:scale-105"
+            >
+                Classic Mode
+            </a>
+            <a
+                href="/ddragon"
+                class="league-btn league-btn-blue w-full text-xl font-bold tracking-wide uppercase shadow-lg transition-transform hover:scale-105"
+            >
+                Champion List
+            </a>
+        </div>
+    </div>
 </Layout>
+
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Beaufort+for+LOL:wght@700&display=swap");
+
+    .league-bg {
+        background:
+            linear-gradient(
+                120deg,
+                rgba(9, 20, 40, 0.95) 0%,
+                rgba(44, 34, 15, 0.7) 100%
+            ),
+            url("https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg")
+                center/cover no-repeat;
+    }
+    .league-card {
+        background: rgba(10, 20, 40, 0.92);
+        border: 4px solid #785a28;
+        box-shadow:
+            0 12px 48px 0 rgba(0, 0, 0, 0.55),
+            0 0 0 4px #c89b3c inset;
+        position: relative;
+        font-family: "Beaufort for LOL", serif;
+    }
+    .league-btn {
+        display: block;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        font-family: "Beaufort for LOL", serif;
+        letter-spacing: 0.08em;
+        border: none;
+        cursor: pointer;
+        transition:
+            background 0.2s,
+            transform 0.2s;
+    }
+    .league-btn-gold {
+        background: linear-gradient(90deg, #c89b3c 0%, #785a28 100%);
+        color: #1e2328;
+        box-shadow: 0 2px 8px 0 rgba(200, 155, 60, 0.25);
+    }
+    .league-btn-blue {
+        background: linear-gradient(90deg, #0099ff 0%, #005fa3 100%);
+        color: #fff;
+        box-shadow: 0 2px 8px 0 rgba(0, 153, 255, 0.18);
+    }
+    .league-btn:hover {
+        filter: brightness(1.1);
+        transform: scale(1.04);
+    }
+</style>

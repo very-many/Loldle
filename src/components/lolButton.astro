@@ -1,0 +1,40 @@
+---
+interface Props {
+    type: number;
+    id: string | null;
+    text: string;
+}
+
+const { type, id, text } = Astro.props;
+---
+
+<button
+    id={id}
+    class="relative inline-flex flex-col justify-center items-center group outline-none cursor-pointer my-8 group"
+>
+    <div
+        class="p-0.5 bg-gradient-to-b from-[#C8AA6E] to-[#7A5C29] group-hover:from-[#F0E5D7] group-hover:to-[#CFA958] group-active:from-[#281F08] group-active:to-[#684F27] outline-1 outline-black/60"
+    >
+        <div
+            class="bg-[#1E2328] outline-offset-[-1px] outline-1 outline-black/60"
+        >
+            <div
+                class="size- px-4 py-2 inline-flex justify-center items-center gap-1 relative z-10"
+            >
+                <div
+                    class="w-full h-full absolute opacity-0 group-hover:opacity-100 group-active:opacity-0 shadow-[0px_-2px_6px_0px] shadow-[#FFEABF]/60 transition-all"
+                >
+                </div>
+                <div
+                    class="w-full h-full absolute opacity-0 group-hover:opacity-100 group-active:opacity-0 shadow-[0px_0px_6px_0px] shadow-[#FFEABF]/60 transition-all"
+                >
+                </div>
+                <div
+                    class="text-center justify-start text-base font-bold font-['Beaufort_for_LOL'] leading-none text-[#CDBE91] group-hover:text-[#F0E6D2] group-active:text-[#5C5B57] transition-colors"
+                >
+                    {text}
+                </div>
+            </div>
+        </div>
+    </div>
+</button>
