@@ -1,6 +1,8 @@
 import * as cheerio from "cheerio";
 
 import { translatorByName, translatorById } from "./translator.js";
+import { VersionManager } from "./VersionService.js";
+import { object } from "astro:schema";
 
 let cache = {};
 
@@ -41,7 +43,6 @@ async function concurrentMap(items, mapper, concurrency = 10) {
 }
 
 /* FETCHERS */
-
 async function fetchReleaseDates() {
     const url = `https://corsproxy.io/?url=https://leagueoflegends.fandom.com/wiki/List_of_champions`;
 
@@ -80,7 +81,7 @@ async function fetchGender(championId) {
     if (exeptions.includes(championId)) {
         return "Divers";
     }
-    
+
     let processedId = championId;
     if (championId === "Renata") {
         processedId = "renataglasc";
@@ -127,7 +128,7 @@ async function fetchGender(championId) {
 async function fetchLanes() {
     try {
         const response = await fetch(
-            `https://corsproxy.io/?url=https://leagueoflegends.fandom.com/wiki/List_of_champions_by_draft_position`
+            `https://corsproxy.io/?url=https://wiki.leagueoflegends.com/en-us/List_of_champions_by_draft_position`
         );
 
         if (!response.ok) {
@@ -154,9 +155,8 @@ async function fetchLanes() {
 
             const championName =
                 translatorByName[
-                    $(columns[0]).find("a").attr("title")?.replace("/LoL", "")
+                    $(columns[0]).find("a").attr("title")?.replace("An icon representing ", "")
                 ]?.id;
-
             if (championName) {
                 let championLanes = [];
 
@@ -454,24 +454,15 @@ async function fetchSpecies() {
 }
 
 async function fetchData() {
-    let response;
-    let version;
-    let versionIndex = 0;
-    do {
-        // I loop over versions because sometimes the latest version is broken
-        version = (
-            await fetch(
-                "http://ddragon.leagueoflegends.com/api/versions.json"
-            ).then(async (r) => await r.json())
-        )[versionIndex++];
+    const version = await VersionManager.getCurrentVersion();
+    console.log(`Fetching champion data for version: ${version}`);
+    const response = await fetch(
+        `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/championFull.json`
+    );
 
-        response = await fetch(
-            `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/championFull.json`
-        );
-        console.log(
-            `Fetching data from version ${version}...` + response.status
-        );
-    } while (!response.ok);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch champion data: ${response.status}`);
+    }
 
     const data = await response.json();
     return data.data;
@@ -526,7 +517,8 @@ async function mapData(champions) {
         const lane = lanes[champion.id] || ["unknown"];
         const species = speciesList[champion.id] || ["unknown"];
         const region = regions[champion.id] || ["Runeterra"];
-        const releaseDate = releaseDates[champion.id] || 0;
+        const releaseDate =
+            releaseDates[champion.id] || new Date().getFullYear();
 
         mappedData[champion.id] = {
             id: champion.id,

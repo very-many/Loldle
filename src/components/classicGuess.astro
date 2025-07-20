@@ -1,5 +1,6 @@
 ---
 import { translatorByName, translatorById } from "../script/translator.js";
+import { VersionManager } from "../script/VersionService.js";
 
 interface Props {
     champions: any;
@@ -12,6 +13,9 @@ let lolol = champions;
 const randomChamp = Object.values(champions).filter(
     (champion: any) => champion.active
 )[0];
+
+const version = await VersionManager.getCurrentVersion();
+console.log(`Current version: ${version}`);
 ---
 
 <!-- <ul class="my-8">
@@ -314,7 +318,7 @@ const randomChamp = Object.values(champions).filter(
 
 
 
-<script define:vars={{ lolol, translatorByName, translatorById, randomChamp, mode }}>
+<script define:vars={{ lolol, translatorByName, translatorById, randomChamp, mode, version }}>
     const grade = {
         Good: "Good",
         Bad: "Bad",
@@ -331,7 +335,6 @@ const randomChamp = Object.values(champions).filter(
 
     const answerHolder = document.getElementById("answerHolder");
     const championHeader = document.getElementById("championHeader");
-    const version = localStorage.getItem("version") || "15.10.1";
     const gameOverEvent = new CustomEvent("gameOver", {
         detail: { result: "win" },
     });
