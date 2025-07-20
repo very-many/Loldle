@@ -11,14 +11,16 @@ import { getAllChampions } from "../pages/api/request.ts";
 export const prerender = false; // Disable prerendering for this page
 
 const champions = await getAllChampions();
+
+const mode = "Classic";
 ---
 
 
 <Layout title="Classic Boldle">
     <MainContainer>
         <!-- <Tip type="Title" hint={champions.answer.title} /> -->
-        <ChampSelect champions={champions} mode="Classic"/>
-        <ClassicGuess champions={champions}/>
+        <ChampSelect champions={champions} mode={mode}/>
+        <ClassicGuess champions={champions} mode={mode} />
         <Reset />
     </MainContainer>
 </Layout>

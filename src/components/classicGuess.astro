@@ -3,9 +3,10 @@ import { translatorByName, translatorById } from "../script/translator.js";
 
 interface Props {
     champions: any;
+    mode: "Classic" | "Splash";
 }
 
-const { champions } = Astro.props;
+const { champions, mode } = Astro.props;
 let lolol = champions;
 
 const randomChamp = Object.values(champions).filter(
@@ -313,7 +314,7 @@ const randomChamp = Object.values(champions).filter(
 
 
 
-<script define:vars={{ lolol, translatorByName, translatorById, randomChamp }}>
+<script define:vars={{ lolol, translatorByName, translatorById, randomChamp, mode }}>
     const grade = {
         Good: "Good",
         Bad: "Bad",
@@ -321,6 +322,12 @@ const randomChamp = Object.values(champions).filter(
         Higher: "Higher",
         Lower: "Lower",
     };
+    const types = {
+        Classic: 1,
+        Normal: 2,
+    };
+
+    const typ = mode === "Classic" ? types.Classic : types.Normal;
 
     const answerHolder = document.getElementById("answerHolder");
     const championHeader = document.getElementById("championHeader");
@@ -329,7 +336,7 @@ const randomChamp = Object.values(champions).filter(
         detail: { result: "win" },
     });
     window.addEventListener("championSelected", (e) => {
-        addAnswer(lolol[e.detail]);
+        addAnswerClassic(lolol[e.detail]);
         if (e.detail === randomChamp.id) {
             window.dispatchEvent(gameOverEvent);
         }
@@ -340,7 +347,7 @@ const randomChamp = Object.values(champions).filter(
     });
 
     const savedAnswers =
-        JSON.parse(localStorage.getItem("selectedChampionsClassic")) || [];
+        JSON.parse(localStorage.getItem(`selectedChampions${mode}`)) || [];
 
     // User has already played the game
     if (savedAnswers[savedAnswers.length - 1] === randomChamp.id) {
@@ -348,10 +355,10 @@ const randomChamp = Object.values(champions).filter(
     }
 
     savedAnswers.forEach((champ) => {
-        addAnswer(lolol[champ]);
+        addAnswerClassic(lolol[champ]);
     });
 
-    function addAnswer(champ) {
+    function addAnswerClassic(champ) {
         championHeader.classList.remove("invisible");
         const result = checkAnswer(champ);
 

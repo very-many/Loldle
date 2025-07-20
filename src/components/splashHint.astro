@@ -1,0 +1,83 @@
+---
+interface Props {
+    championAnswer: any;
+    version: string;
+}
+const { championAnswer, version } = Astro.props;
+
+console.log("SplashHint", championAnswer, version);
+---
+
+<div>
+    <canvas id="splashHint" width="200" height="200"></canvas>
+</div>
+
+<script>
+    const CANVAS_SIZE = 200;
+    const STEP = 50;
+    const IMG_WIDTH = 1920;
+    const IMG_HEIGHT = 1080;
+
+    var canvas = document.getElementById("splashHint");
+    var context = canvas.getContext("2d");
+    var imageObj = new Image();
+
+    // Startausschnitt
+    var crop = {
+        width: CANVAS_SIZE,
+        height: CANVAS_SIZE,
+        x: 0,
+        y: 0
+    };
+
+    function getRandomCrop() {
+        const maxX = IMG_WIDTH - CANVAS_SIZE;
+        const maxY = IMG_HEIGHT - CANVAS_SIZE;
+        return {
+            x: Math.floor(Math.random() * (maxX + 1)),
+            y: Math.floor(Math.random() * (maxY + 1)),
+            width: CANVAS_SIZE,
+            height: CANVAS_SIZE
+        };
+    }
+
+    function cropImage() {
+        if (context) {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(
+                imageObj,
+                crop.x,
+                crop.y,
+                crop.width,
+                crop.height,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+        }
+    }
+
+    imageObj.onload = function () {
+        crop = getRandomCrop();
+        cropImage();
+    };
+
+    // Event Listener für "guess"
+    window.addEventListener("guess", function () {
+        // Erweiterung um 50px in jede Richtung, aber nicht über Bildrand hinaus
+        const newX = Math.max(0, crop.x - STEP);
+        const newY = Math.max(0, crop.y - STEP);
+        const newWidth = Math.min(IMG_WIDTH - newX, crop.width + 2 * STEP);
+        const newHeight = Math.min(IMG_HEIGHT - newY, crop.height + 2 * STEP);
+
+        crop.x = newX;
+        crop.y = newY;
+        crop.width = newWidth;
+        crop.height = newHeight;
+
+        cropImage();
+    });
+
+    imageObj.src = "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aatrox_0.jpg";
+</script>

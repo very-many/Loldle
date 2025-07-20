@@ -76,6 +76,11 @@ async function fetchReleaseDates() {
 }
 
 async function fetchGender(championId) {
+    const exeptions = ["Kindred"];
+    if (exeptions.includes(championId)) {
+        return "Divers";
+    }
+    
     let processedId = championId;
     if (championId === "Renata") {
         processedId = "renataglasc";
@@ -382,9 +387,11 @@ async function fetchSpecies() {
             const html = await response.text();
             const $ = cheerio.load(html);
 
-            // ...existing code...
             const champions = [];
-            const galleryDivs = $('[id^="gallery-"]').slice(0, species[oneSpecies].maxFields); // nur die ersten 7 Galerien
+            const galleryDivs = $('[id^="gallery-"]').slice(
+                0,
+                species[oneSpecies].maxFields
+            ); // nur die ersten 7 Galerien
 
             galleryDivs.each((_, gallery) => {
                 $(gallery)
@@ -396,8 +403,6 @@ async function fetchSpecies() {
                         }
                     });
             });
-            // ...existing code...
-            // ...existing code...
 
             console.log(
                 species[oneSpecies].name +
@@ -475,7 +480,7 @@ async function fetchData() {
 /* DATA HELPERS */
 
 function getAttackType(champion) {
-    const mixedChampions = ["Nidalee", "Jayce", "Elise"];
+    const mixedChampions = ["Nidalee", "Jayce", "Elise", "Gnar", "Kayle"];
     if (mixedChampions.includes(champion.id)) {
         return "Mixed";
     }
@@ -527,10 +532,7 @@ async function mapData(champions) {
             id: champion.id,
             name: champion.name,
             lane: lane,
-            species:
-                species == "unknown" && champion.id == "Ambessa"
-                    ? ["Human"]
-                    : species,
+            species: species,
             resource: champion.partype == "" ? "None" : champion.partype,
             gender: gender,
             attackType: getAttackType(champion),

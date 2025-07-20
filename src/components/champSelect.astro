@@ -3,7 +3,7 @@ import { translatorByName, translatorById } from "../script/translator.js";
 
 interface Props {
     champions: any;
-    mode: string;
+    mode: "Classic" | "Splash";
 }
 
 const { champions, mode } = Astro.props;
