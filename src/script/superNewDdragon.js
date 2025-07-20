@@ -97,7 +97,7 @@ async function fetchGender(championId) {
 
         const loreData = await response.json();
         const bio =
-            loreData.champion?.biography?.full?.toLowerCase().split(/\s+/) ||
+            loreData.champion?.biography?.short?.toLowerCase().split(/\s+/) ||
             [];
 
         const maleKeywords = new Set(["he", "him", "his"]);
@@ -120,7 +120,7 @@ async function fetchGender(championId) {
         }
     } catch (error) {
         console.error(`Error fetching lore for ${championId}:`, error);
-        return "divers";
+        return "Divers";
     }
 }
 
@@ -526,7 +526,7 @@ async function mapData(champions) {
         const lane = lanes[champion.id] || ["unknown"];
         const species = speciesList[champion.id] || ["unknown"];
         const region = regions[champion.id] || ["Runeterra"];
-        const releaseDate = releaseDates[champion.id] || "unknown";
+        const releaseDate = releaseDates[champion.id] || 0;
 
         mappedData[champion.id] = {
             id: champion.id,

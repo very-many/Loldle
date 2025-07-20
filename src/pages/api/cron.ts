@@ -45,7 +45,7 @@ export const GET: APIRoute = async ({ params, request }) => {
             const championsData = await parse();
             await postToDatabase(championsData);
             return new Response(
-                JSON.stringify({ message: "Data posted successfully" }),
+                JSON.stringify(championsData),
                 {
                     status: 200,
                     headers: { "Content-Type": "application/json" },
