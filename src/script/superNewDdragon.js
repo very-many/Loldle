@@ -157,6 +157,7 @@ async function fetchLanes() {
                 translatorByName[
                     $(columns[0]).find("a").attr("title")?.replace("An icon representing ", "")
                 ]?.id;
+
             if (championName) {
                 let championLanes = [];
 
