@@ -157,7 +157,10 @@ async function fetchLanes() {
                     $(columns[0]).find("a").attr("title")?.replace("/LoL", "")
                 ]?.id;
             console.log(
-                `Processing champion: ${championName} from ${$(columns[0]).find("a").attr("title")?.replace("/LoL", "")`
+                `Processing champion: ${championName} from ${$(columns[0])
+                    .find("a")
+                    .attr("title")
+                    ?.replace("/LoL", "")}`
             );
 
             if (championName) {
